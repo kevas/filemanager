@@ -1,0 +1,24 @@
+{
+    "name": "kevas/filemanager",
+    "description": "Web Filemanager",
+    "keywords": ["filemanager"],
+    "type": "library",
+    "authors": [
+        {
+            "name": "Roman Slancar",
+            "email": "rslancar@gmail.com"
+        }
+    ],
+    "require": {
+        "php": ">= 7.1",
+        "nette/finder": "^2.5",
+        "nette/utils": "^3.0",
+        "latte/latte": "^2.5",
+        "symfony/http-foundation": "^4.4"
+    },
+    "autoload": {
+        "psr-4": {
+            "Kevas\\Filemanager\\": "src"
+        }
+    }
+}
