@@ -1,6 +1,5 @@
 <?php
 
-
 namespace Kevas\Filemanager;
 
 use Kevas\Filemanager\Exception\FilemanagerException;
