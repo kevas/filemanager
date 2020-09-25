@@ -1,8 +1,7 @@
 {
     "name": "kevas/filemanager",
-    "description": "Web Filemanager",
+    "description": "Web Filemanager written for php",
     "keywords": ["filemanager"],
-    "type": "library",
     "authors": [
         {
             "name": "Roman Slancar",
@@ -20,5 +19,6 @@
         "psr-4": {
             "Kevas\\Filemanager\\": "src"
         }
-    }
+    },
+    "minimum-stability": "dev"
 }
