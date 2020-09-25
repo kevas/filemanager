@@ -79,7 +79,7 @@ class Filemanager {
 
         $searchDir = $this->uploadDirFullPath . '/' . $pathRequest;
 
-        $this->createNewFolder($searchDir, $pathRequest, $request);
+        $this->createNewDir($searchDir, $pathRequest, $request);
 
         if(!is_dir($searchDir)) {
             $searchDir = $this->uploadDirFullPath;
@@ -91,7 +91,7 @@ class Filemanager {
 
         $content = '';
         foreach (Finder::findDirectories('*')->in($searchDir)->exclude('__thumb__') as $file) {
-            $content .= $this->getRowFolder($file);
+            $content .= $this->getRowDir($file);
         }
 
         foreach (Finder::findFiles('*')->in($searchDir) as $file) {
@@ -105,7 +105,7 @@ class Filemanager {
         $filemanagerList = Html::el('div')->setAttribute('class', 'filemanager')->setHtml($headerContent . $parentDirContent . $content);
 
         return  Html::el('div')->setAttribute('class', 'container-filemanager')->setHtml($this->getTopBar() .
-            $filemanagerList . $this->getDropzoneBlock($request, $pathRequest) . $this->getNewFolderBlock($request, $pathRequest))->render();
+            $filemanagerList . $this->getDropzoneBlock($request, $pathRequest) . $this->getNewDirBlock($request, $pathRequest))->render();
 
     }
 
@@ -125,16 +125,16 @@ class Filemanager {
      * @param SplFileInfo $file
      * @return Html
      */
-    protected function getRowFolder(SplFileInfo $file): Html {
-        $icon = $this->getFolderIcon();
-        $folderName = $this->getFileName($file);
+    protected function getRowDir(SplFileInfo $file): Html {
+        $icon = $this->getDirIcon();
+        $dirName = $this->getFileName($file);
         $fileSize = $this->getFileSize($file, 'Folder');
         $fileTime = $this->getModifiedTime($file);
 
         $pathEncoded = urlencode((!empty($pathRequest) ? $pathRequest . '/' : '') . $file->getFilename());
 
         $row = Html::el('a')->addAttributes(['href' => '?path=' . $pathEncoded, 'class' => 'folder'])->setHtml(
-            $icon . $folderName . $fileSize . $fileTime);
+            $icon . $dirName . $fileSize . $fileTime);
 
         return Html::el('div')->setAttribute('class', 'row folder')->setHtml($row);
     }
@@ -161,7 +161,7 @@ class Filemanager {
     /**
      * @return string
      */
-    protected function getFolderIcon(): string {
+    protected function getDirIcon(): string {
         $value = $this->getInnerWrapperValue('<i class="far fa-folder"></i>');
         return $this->getWrapperValue($value, 'icon');
     }
@@ -410,16 +410,16 @@ class Filemanager {
      * @param string $pathRequest
      * @return string
      */
-    protected function getNewFolderBlock(Request $request, string $pathRequest): string {
-        $newFolderBg =  Html::el('div')->addAttributes([
+    protected function getNewDirBlock(Request $request, string $pathRequest): string {
+        $newDirBg =  Html::el('div')->addAttributes([
             'class' => 'new-folder-bg'
         ])->render();
 
-        $newFolderBlock = Html::el('div')->addAttributes([
+        $newDirBlock = Html::el('div')->addAttributes([
             'class' => 'new-folder-box'
-        ])->setHtml($this->getFormNewFolder($request, $pathRequest));
+        ])->setHtml($this->getFormNewDir($request, $pathRequest));
 
-        return $newFolderBg . $newFolderBlock;
+        return $newDirBg . $newDirBlock;
     }
 
     /**
@@ -427,7 +427,7 @@ class Filemanager {
      * @param string $pathRequest
      * @return string
      */
-    protected function getFormNewFolder(Request $request, string $pathRequest): string {
+    protected function getFormNewDir(Request $request, string $pathRequest): string {
         return Html::el('form')->addAttributes([
             'action' => $request->getPathInfo() . '?path=' . $pathRequest,
             'method' => 'post'
@@ -444,13 +444,13 @@ class Filemanager {
      * @param Request $request
      * @throws FilemanagerException
      */
-    protected function createNewFolder(string $searchDir, string $pathRequest, Request $request) {
-        $newFolderName = $request->request->get('folderName', '');
+    protected function createNewDir(string $searchDir, string $pathRequest, Request $request) {
+        $newDirName = $request->request->get('folderName', '');
 
-        if(!empty($newFolderName)) {
+        if(!empty($newDirName)) {
 
             try {
-                FileSystem::createDir($this->removeMultipleSlash($searchDir . '/' . $newFolderName));
+                FileSystem::createDir($this->removeMultipleSlash($searchDir . '/' . $newDirName));
             } catch (IOException $e) {
                 throw new FilemanagerException('Failed to create directory');
             }
