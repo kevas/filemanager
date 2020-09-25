@@ -41,7 +41,7 @@ class Filemanager {
     public function __construct() {
         $this->latte = new Latte\Engine;
         $this->latte->setTempDirectory($this->getTempDirLatte());
-        $this->latte->setAutoRefresh(false);
+//        $this->latte->setAutoRefresh(false);
     }
 
     /**
@@ -91,19 +91,27 @@ class Filemanager {
             $pathRequest = '';
         }
 
-        $this->addLatteFunction($pathRequest, $request);
+        $breadCrumbs = array_filter(explode('/', $pathRequest));
+
+        $this->addLatteFunction($pathRequest, $request, $breadCrumbs);
 
         $dirs = Finder::findDirectories('*')->in($searchDir)->exclude('__thumb__');
         $files = Finder::findFiles('*')->in($searchDir);
 
-        return $this->latte->renderToString($this->getTemplateDir() . 'index.latte', ['dirs' => $dirs, 'files' => $files]);
+        return $this->latte->renderToString($this->getTemplateDir() . 'index.latte', [
+            'dirs' => $dirs,
+            'files' => $files,
+            'breadCrumbs' => $breadCrumbs,
+            'pathInfo' => $request->getPathInfo()
+        ]);
     }
 
     /**
      * @param string $pathRequest
      * @param Request $request
+     * @param array $breadCrumbs
      */
-    protected function addLatteFunction(string $pathRequest, Request $request) {
+    protected function addLatteFunction(string $pathRequest, Request $request, array $breadCrumbs) {
         $this->latte->addFunction('getPath', function (SplFileInfo $file) use ($pathRequest) {
             return urlencode((!empty($pathRequest) ? $pathRequest . '/' : '') . $file->getFilename());
         });
@@ -131,6 +139,63 @@ class Filemanager {
         $this->latte->addFunction('getNewDirUrl', function () use ($request, $pathRequest) {
             return $request->getPathInfo() . '?path=' . $pathRequest;
         });
+
+        $this->latte->addFunction('getBreadCrumbItem', function ($breadCrumbValue) use ($breadCrumbs) {
+            return $this->getBreadCrumbItem($breadCrumbValue, $breadCrumbs);
+        });
+
+        $this->latte->addFunction('getFilename', function (SplFileInfo $file) {
+            return $this->getFilename($file);
+        });
+    }
+
+    /**
+     * @param SplFileInfo $file
+     * @return string
+     */
+    protected function getFilename(SplFileInfo $file): string {
+
+        $href = str_replace($this->documentRootDir, '', $file->getPathname());
+
+        if($this->isImageFileType($file)) {
+            $filename = '<a href="#" onclick="window.open(\'' . $href . '\', \'_blank\', \'width=800,height=500\');">' . $file->getFilename() . '</a>';
+        } else {
+            $filename = '<a href="' . $href . '">' . $file->getFilename() . '</a>';
+        }
+
+        return $filename;
+    }
+
+    /**
+     * @param string $breadCrumbValue
+     * @param array $breadCrumbs
+     * @return string
+     */
+    protected function getBreadCrumbItem(string $breadCrumbValue, array $breadCrumbs): string {
+
+        if(empty($breadCrumbs)) {
+            return '';
+        }
+
+        $lastItem = end($breadCrumbs);
+
+        if($lastItem == $breadCrumbValue) {
+            return '<span>' . $breadCrumbValue . '</span>';
+        }
+
+        $path = '';
+
+        foreach($breadCrumbs as $breadCrumb) {
+
+            $path .= $breadCrumb . '/';
+            if($breadCrumb == $breadCrumbValue) {
+                break;
+            }
+        }
+
+        $path = rtrim($path, '/');
+
+        return '<a href="?path=' . $path . '">' . $breadCrumbValue . '</a>';
     }
 
     /**
@@ -144,12 +209,16 @@ class Filemanager {
 
         if($this->isImageFileType($file)) {
             $fileIcon = $this->getImageThumb($file);
-        } else if($extension == 'xsl' || $extension == 'xslx') {
+        } else if($extension == 'xls' || $extension == 'xlsx') {
             $fileIcon = '<i class="far fa-file-excel"></i>';
         } else if($extension == 'doc') {
             $fileIcon = '<i class="far fa-file-word"></i>';
         } else if($extension == 'pdf') {
             $fileIcon = '<i class="far fa-file-pdf"></i>';
+        } else if($extension == 'zip') {
+            $fileIcon = '<i class="far fa-file-archive"></i>';
+        } else if($extension == 'txt') {
+            $fileIcon = '<i class="far fa-file-alt"></i>';
         } else {
             $fileIcon = '<i class="far fa-file"></i>';
         }

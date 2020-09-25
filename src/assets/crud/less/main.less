@@ -1,11 +1,17 @@
 @import url('https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@400;700&display=swap');
 
 @color-border: #f1f1f1;
-@color-active: #006aeb;
+@color-link: #006aeb;
+@color-active: #909eb5;
 
 .transition(@transition) { -webkit-transition: @transition; -moz-transition: @transition; -ms-transition: @transition; -o-transition: @transition; transition: @transition; }
 
 body { background-color: #F7F7F7; padding: 0; margin: 0 }
+a { color: @color-link; .transition(all 0.2s ease);
+    &:hover,
+    &:focus,
+    &:active { color: @color-active; }
+}
 
 .container-filemanager { font-family: 'Roboto Condensed', sans-serif; color: #333;
     .btn, input { font-family: 'Roboto Condensed', sans-serif; }
@@ -14,12 +20,17 @@ body { background-color: #F7F7F7; padding: 0; margin: 0 }
 .top-bar { position: fixed; display: flex; left: 0; top: 0; background-color: #fff; padding: 10px 20px; width: ~"calc(100% - 40px)";
     box-shadow: 0 4px 5px 0 rgba(0, 0, 0, .14), 0 1px 10px 0 rgba(0, 0, 0, .12), 0 2px 4px -1px rgba(0, 0, 0, .2);
 
-    .logo { font-weight: bold; font-size: 24px; flex-grow: 1; }
+    .logo { font-weight: bold; font-size: 24px;  }
+    .breadcrumbs { flex-grow: 1; margin: 6px 0 0 20px;
+        a { text-decoration: none }
+        i { margin-right: 0 }
+    }
+
     .upload { margin-right: 25px }
     .upload, .new-folder { margin-top: 5px; cursor: pointer; .transition(all 0.2s ease);
         &:hover,
         &:focus,
-        &:active { color: @color-active; }
+        &:active { color: @color-link; }
     }
     i { margin-right: 4px }
 }
@@ -36,7 +47,7 @@ body { background-color: #F7F7F7; padding: 0; margin: 0 }
             .inner-wrapper-value { padding-left: 15px; display: block; line-height: 0 }
         }
 
-        a.folder { display: flex; width: 100%; align-items: stretch; text-decoration: none; color: @color-active; .transition(all 0.2s ease);
+        a.folder { display: flex; width: 100%; align-items: stretch; text-decoration: none; color: @color-link; .transition(all 0.2s ease);
             &.parent { border-bottom: 1px solid @color-border;
                 .wrapper-value { border-bottom: none }
             }
@@ -65,7 +76,7 @@ body { background-color: #F7F7F7; padding: 0; margin: 0 }
     .fa-times { position: absolute; right: 0; top: -28px; font-size: 20px; cursor: pointer; color: #000; .transition(all 0.2s ease);
         &:hover,
         &:focus,
-        &:active { color: @color-active; }
+        &:active { color: @color-link; }
     }
 }
 
@@ -79,7 +90,7 @@ body { background-color: #F7F7F7; padding: 0; margin: 0 }
         .fa-times { position: absolute; right: 20px; top: 15px; font-size: 20px; cursor: pointer; color: #000; .transition(all 0.2s ease);
             &:hover,
             &:focus,
-            &:active { color: @color-active; }
+            &:active { color: @color-link; }
         }
     }
 }
@@ -94,7 +105,7 @@ body { background-color: #F7F7F7; padding: 0; margin: 0 }
     }
 }
 
-.btn { display: inline-block; background-color: #006aeb; color: #fff; padding: .5rem 1.4rem; user-select: none; cursor: pointer;
+.btn { display: inline-block; background-color: @color-link; color: #fff; padding: .5rem 1.4rem; user-select: none; cursor: pointer;
     font-size: .9rem; line-height: 1.5; border-radius: .25rem; border: none; text-transform: uppercase; margin-left: 5px;
     .transition(all 0.2s ease);
     &:hover,

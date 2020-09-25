@@ -1,7 +1,20 @@
 <div class="container-filemanager">
 
     <div class="top-bar">
+
         <div class="logo">File Manager</div>
+
+        <div class="breadcrumbs">
+            <a href="{$pathInfo}"><i class="fas fa-home"></i></a>
+            {if count($breadCrumbs) > 0}
+                <span class="sep">/</span>
+                {foreach $breadCrumbs as $breadCrumb}
+                    {getBreadCrumbItem($breadCrumb)|noescape}
+                    {!$iterator->isLast() ? '<span class="sep">/</span>' : ''|noescape}
+                {/foreach}
+            {/if}
+        </div>
+
         <div class="upload"><i class="fas fa-upload"></i>Upload files</div>
         <div class="new-folder"><i class="far fa-plus-square"></i>New folder</div>
     </div>
@@ -32,8 +45,8 @@
         {foreach $files as $file}
 
             <div class="row image">
-                <span class="wrapper-value icon"><span class="inner-wrapper-value">{getFileIcon($file)}</span></span>
-                <span class="wrapper-value filename"><span class="inner-wrapper-value">{$file->getFilename()}</span></span>
+                <span class="wrapper-value icon"><span class="inner-wrapper-value">{getFileIcon($file)|noescape}</span></span>
+                <span class="wrapper-value filename"><span class="inner-wrapper-value">{getFilename($file)|noescape}</span></span>
                 <span class="wrapper-value size"><span class="inner-wrapper-value">{getHumanFileSize($file)}</span></span>
                 <span class="wrapper-value time"><span class="inner-wrapper-value">{date('d.m.Y H:i', $file->getMTime())}</span></span>
             </div>

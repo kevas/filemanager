@@ -17,6 +17,19 @@ body {
   padding: 0;
   margin: 0;
 }
+a {
+  color: #006aeb;
+  -webkit-transition: all 0.2s ease;
+  -moz-transition: all 0.2s ease;
+  -ms-transition: all 0.2s ease;
+  -o-transition: all 0.2s ease;
+  transition: all 0.2s ease;
+}
+a:hover,
+a:focus,
+a:active {
+  color: #909eb5;
+}
 .container-filemanager {
   font-family: 'Roboto Condensed', sans-serif;
   color: #333;
@@ -38,7 +51,16 @@ body {
 .top-bar .logo {
   font-weight: bold;
   font-size: 24px;
+}
+.top-bar .breadcrumbs {
   flex-grow: 1;
+  margin: 6px 0 0 20px;
+}
+.top-bar .breadcrumbs a {
+  text-decoration: none;
+}
+.top-bar .breadcrumbs i {
+  margin-right: 0;
 }
 .top-bar .upload {
   margin-right: 25px;
