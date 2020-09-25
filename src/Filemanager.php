@@ -41,7 +41,7 @@ class Filemanager {
     public function __construct() {
         $this->latte = new Latte\Engine;
         $this->latte->setTempDirectory($this->getTempDirLatte());
-//        $this->latte->setAutoRefresh(false);
+        $this->latte->setAutoRefresh(false);
     }
 
     /**
