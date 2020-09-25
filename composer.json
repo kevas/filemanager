@@ -1,6 +1,6 @@
 {
     "name": "kevas/filemanager",
-    "description": "Web Filemanager written for php",
+    "description": "Filemanager for web application",
     "keywords": ["filemanager", "web"],
     "authors": [
         {

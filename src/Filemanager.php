@@ -9,6 +9,7 @@ use Nette\Utils\Html;
 use Nette\Utils\ImageException;
 use Nette\Utils\UnknownImageFileException;
 use SplFileInfo;
+use Latte;
 use Nette\Utils\Image;
 use Nette\Utils\FileSystem;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
@@ -16,6 +17,11 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
 class Filemanager {
+
+    /**
+     * @var Latte\Engine
+     */
+    private $latte;
 
     /**
      * @var string
@@ -31,6 +37,12 @@ class Filemanager {
      * @var string
      */
     private $uploadDirFullPath;
+
+    public function __construct() {
+        $this->latte = new Latte\Engine;
+        $this->latte->setTempDirectory($this->getTempDirLatte());
+        $this->latte->setAutoRefresh(false);
+    }
 
     /**
      * @return string
@@ -60,110 +72,65 @@ class Filemanager {
     /**
      * @return string
      * @throws FilemanagerException
-     * @throws ImageException
-     * @throws UnknownImageFileException
      */
     public function render() {
         $this->init();
-
         $this->createThumbDir();
 
         $request = Request::createFromGlobals();
         $pathRequest = $request->get('path', '');
-        $fileupload = $request->get('fileupload', '');
 
-        if(!empty($fileupload)) {
-            $this->filesUpload($request);
-            exit;
-        }
+        $this->filesUploadAction($request);
 
         $searchDir = $this->uploadDirFullPath . '/' . $pathRequest;
 
-        $this->createNewDir($searchDir, $pathRequest, $request);
+        $this->createNewDirAction($searchDir, $pathRequest, $request);
 
         if(!is_dir($searchDir)) {
             $searchDir = $this->uploadDirFullPath;
             $pathRequest = '';
         }
 
-        $headerContent = $this->getHeader();
-        $parentDirContent = $this->getParentDir($pathRequest);
+        $this->addLatteFunction($pathRequest, $request);
 
-        $content = '';
-        foreach (Finder::findDirectories('*')->in($searchDir)->exclude('__thumb__') as $file) {
-            $content .= $this->getRowDir($file);
-        }
+        $dirs = Finder::findDirectories('*')->in($searchDir)->exclude('__thumb__');
+        $files = Finder::findFiles('*')->in($searchDir);
 
-        foreach (Finder::findFiles('*')->in($searchDir) as $file) {
-            $content .= $this->getRowFile($file);
-        }
-
-        if(empty($content)) {
-            $content = $this->getEmptyContent();
-        }
-
-        $filemanagerList = Html::el('div')->setAttribute('class', 'filemanager')->setHtml($headerContent . $parentDirContent . $content);
-
-        return  Html::el('div')->setAttribute('class', 'container-filemanager')->setHtml($this->getTopBar() .
-            $filemanagerList . $this->getDropzoneBlock($request, $pathRequest) . $this->getNewDirBlock($request, $pathRequest))->render();
-
+        return $this->latte->renderToString($this->getTemplateDir() . 'index.latte', ['dirs' => $dirs, 'files' => $files]);
     }
 
     /**
-     * @return string
+     * @param string $pathRequest
+     * @param Request $request
      */
-    protected function getEmptyContent(): string {
-        return Html::el('div')->setAttribute('class', 'empty-content')->setHtml('
-            <div class="empty-content-inner">
-                <button class="btn upload"><i class="fas fa-upload"></i>Upload files</button>
-                <button class="btn new-folder"><i class="far fa-plus-square"></i>New folder</button>
-            </div>
-        ')->render();
-    }
+    protected function addLatteFunction(string $pathRequest, Request $request) {
+        $this->latte->addFunction('getPath', function (SplFileInfo $file) use ($pathRequest) {
+            return urlencode((!empty($pathRequest) ? $pathRequest . '/' : '') . $file->getFilename());
+        });
 
-    /**
-     * @param SplFileInfo $file
-     * @return Html
-     */
-    protected function getRowDir(SplFileInfo $file): Html {
-        $icon = $this->getDirIcon();
-        $dirName = $this->getFileName($file);
-        $fileSize = $this->getFileSize($file, 'Folder');
-        $fileTime = $this->getModifiedTime($file);
+        $this->latte->addFunction('getFileIcon', function (SplFileInfo $file) {
+            return $this->getFileIcon($file);
+        });
 
-        $pathEncoded = urlencode((!empty($pathRequest) ? $pathRequest . '/' : '') . $file->getFilename());
+        $this->latte->addFunction('getHumanFileSize', function (SplFileInfo $file) {
+            return $this->getHumanFileSize($file->getMTime());
+        });
 
-        $row = Html::el('a')->addAttributes(['href' => '?path=' . $pathEncoded, 'class' => 'folder'])->setHtml(
-            $icon . $dirName . $fileSize . $fileTime);
+        $this->latte->addFunction('displayParentDir', function () use ($pathRequest) {
+            return $this->displayParentDir($pathRequest);
+        });
 
-        return Html::el('div')->setAttribute('class', 'row folder')->setHtml($row);
-    }
+        $this->latte->addFunction('getPathParentDir', function () use ($pathRequest) {
+            return $this->getPathParentDir($pathRequest);
+        });
 
-    /**
-     * @param SplFileInfo $file
-     * @return Html
-     * @throws ImageException
-     * @throws UnknownImageFileException
-     */
-    protected function getRowFile(SplFileInfo $file): Html {
-        $icon = $this->getFileIcon($file);
-        $fileName = $this->getFileName($file);
-        $fileSize = $this->getFileSize($file);
-        $fileTime = $this->getModifiedTime($file);
+        $this->latte->addFunction('getDropzoneUrl', function () use ($request, $pathRequest) {
+            return $request->getPathInfo() . '?fileupload=1&path=' . $pathRequest;
+        });
 
-        $row = $icon . $fileName . $fileSize . $fileTime;
-
-        $classFileType = ($this->isImageFileType($file) ? 'image' : 'file');
-
-        return Html::el('div')->setAttribute('class', 'row ' . $classFileType)->setHtml($row);
-    }
-
-    /**
-     * @return string
-     */
-    protected function getDirIcon(): string {
-        $value = $this->getInnerWrapperValue('<i class="far fa-folder"></i>');
-        return $this->getWrapperValue($value, 'icon');
+        $this->latte->addFunction('getNewDirUrl', function () use ($request, $pathRequest) {
+            return $request->getPathInfo() . '?path=' . $pathRequest;
+        });
     }
 
     /**
@@ -187,62 +154,8 @@ class Filemanager {
             $fileIcon = '<i class="far fa-file"></i>';
         }
 
-        $value = $this->getInnerWrapperValue($fileIcon);
+        return $fileIcon;
 
-        return $this->getWrapperValue($value, 'icon');
-
-    }
-
-    /**
-     * @param SplFileInfo $file
-     * @param string $altTextSize
-     * @return string
-     */
-    protected function getFileSize(SplFileInfo $file, string $altTextSize = ''): string {
-
-        if(empty($altTextSize)) {
-            $size = $this->getHumanFileSize($file->getSize());
-        } else {
-            $size = $altTextSize;
-        }
-
-        $value = $this->getInnerWrapperValue($size);
-        return $this->getWrapperValue($value, 'size');
-    }
-
-    /**
-     * @param SplFileInfo $file
-     * @return string
-     */
-    protected function getModifiedTime(SplFileInfo $file): string {
-        $value = $this->getInnerWrapperValue(date('d.m.Y H:i', $file->getMTime()));
-        return $this->getWrapperValue($value, 'time');
-    }
-
-    /**
-     * @param SplFileInfo $file
-     * @return string
-     */
-    protected function getFileName(SplFileInfo $file): string {
-        $value = $this->getInnerWrapperValue($file->getFilename());
-        return $this->getWrapperValue($value, 'filename');
-    }
-
-    /**
-     * @param string $value
-     * @param string $class
-     * @return string
-     */
-    protected function getWrapperValue(string $value, string $class): string {
-        return Html::el('span')->setAttribute('class', 'wrapper-value ' . $class)->setHtml($value)->render();
-    }
-
-    /**
-     * @param string $value
-     * @return string
-     */
-    protected function getInnerWrapperValue(string $value): string {
-        return Html::el('span')->setAttribute('class', 'inner-wrapper-value')->setHtml($value)->render();
     }
 
     /**
@@ -272,11 +185,19 @@ class Filemanager {
 
     /**
      * @param string $path
+     * @return bool
+     */
+    protected function displayParentDir(string $path): bool {
+        $pathArr = array_filter(explode('/', $path));
+        return (count($pathArr) > 0);
+    }
+
+    /**
+     * @param string $path
      * @return string
      */
-    protected function getParentDir(string $path): string {
+    protected function getPathParentDir(string $path): string {
         $pathArr = array_filter(explode('/', $path));
-
         $countPath = count($pathArr);
 
         if($countPath < 1) {
@@ -285,15 +206,7 @@ class Filemanager {
 
         array_pop($pathArr);
 
-        $href = ($countPath > 1 ? '?path=' . implode('/', $pathArr) : '?path=');
-
-        $icon =  '<i class="fas fa-arrow-up"></i>';
-
-        $value = $this->getInnerWrapperValue($icon);
-
-        $parentDir = Html::el('a')->addAttributes(['href' => $href, 'class' => 'folder parent'])->setHtml($this->getWrapperValue($value, 'icon'));
-
-        return Html::el('div')->setAttribute('class', 'row')->setHtml($parentDir);
+        return ($countPath > 1 ? implode('/', $pathArr) : '');
     }
 
     /**
@@ -351,91 +264,23 @@ class Filemanager {
     }
 
     /**
-     * @return string
-     */
-    protected function getHeader(): string {
-
-        $items = $this->getWrapperValue($this->getInnerWrapperValue(''), 'icon');
-        $items .= $this->getWrapperValue($this->getInnerWrapperValue('Name'), 'filename');
-        $items .= $this->getWrapperValue($this->getInnerWrapperValue('Size'), 'size');
-        $items .= $this->getWrapperValue($this->getInnerWrapperValue('Modified'), 'modified');
-
-        return Html::el('div')->setAttribute('class', 'row header')->setHtml($items)->render();
-    }
-
-    /**
-     * @return string
-     */
-    protected function getTopBar(): string {
-        return Html::el('div')->setAttribute('class', 'top-bar')->setHtml(
-            Html::el('div')->setAttribute('class', 'logo')->setHtml('File Manager') .
-            Html::el('div')->setAttribute('class', 'upload')->setHtml('<i class="fas fa-upload"></i>Upload files') .
-            Html::el('div')->setAttribute('class', 'new-folder')->setHtml('<i class="far fa-plus-square"></i>New folder')
-        )->render();
-    }
-
-    /**
-     * @param Request $request
-     * @param string $pathRequest
-     * @return string
-     */
-    protected function getDropzoneBlock(Request $request, string $pathRequest): string {
-        $dropzoneBg =  Html::el('div')->addAttributes([
-            'class' => 'dropzone-bg'
-        ])->render();
-
-        $dropzoneBlock =  Html::el('form')->addAttributes([
-            'action' => $request->getPathInfo() . '?fileupload=1&path=' . $pathRequest,
-            'class' => 'dropzone-box'
-        ])->addHtml('<i class="fas fa-times"></i><div class="dz-message needsclick"><button type="button" class="dz-button">Drop files here or click to upload.</button></div>')->render();
-
-        return $dropzoneBg . $dropzoneBlock;
-    }
-
-    /**
      * @param Request $request
      */
-    protected function filesUpload(Request $request) {
+    protected function filesUploadAction(Request $request) {
+        $fileupload = $request->get('fileupload', '');
 
-        $uploadDir = $this->removeMultipleSlash($this->uploadDirFullPath . '/'. $request->get('path', '') . '/');
+        if(!empty($fileupload)) {
 
-        /** @var UploadedFile $file */
-        foreach($request->files->all() as $file) {
-            $file->move($uploadDir, $file->getClientOriginalName());
+            $uploadDir = $this->removeMultipleSlash($this->uploadDirFullPath . '/'. $request->get('path', '') . '/');
+
+            /** @var UploadedFile $file */
+            foreach($request->files->all() as $file) {
+                $file->move($uploadDir, $file->getClientOriginalName());
+            }
+
+            exit;
+
         }
-    }
-
-    /**
-     * @param Request $request
-     * @param string $pathRequest
-     * @return string
-     */
-    protected function getNewDirBlock(Request $request, string $pathRequest): string {
-        $newDirBg =  Html::el('div')->addAttributes([
-            'class' => 'new-folder-bg'
-        ])->render();
-
-        $newDirBlock = Html::el('div')->addAttributes([
-            'class' => 'new-folder-box'
-        ])->setHtml($this->getFormNewDir($request, $pathRequest));
-
-        return $newDirBg . $newDirBlock;
-    }
-
-    /**
-     * @param Request $request
-     * @param string $pathRequest
-     * @return string
-     */
-    protected function getFormNewDir(Request $request, string $pathRequest): string {
-        return Html::el('form')->addAttributes([
-            'action' => $request->getPathInfo() . '?path=' . $pathRequest,
-            'method' => 'post'
-        ])->setHtml('
-            <i class="fas fa-times"></i>
-            <input type="text" name="folderName" class="form-control" placeholder="Name of folder" />
-            <input type="submit" value="Create" class="btn">'
-        )->render();
     }
 
     /**
@@ -444,7 +289,7 @@ class Filemanager {
      * @param Request $request
      * @throws FilemanagerException
      */
-    protected function createNewDir(string $searchDir, string $pathRequest, Request $request) {
+    protected function createNewDirAction(string $searchDir, string $pathRequest, Request $request) {
         $newDirName = $request->request->get('folderName', '');
 
         if(!empty($newDirName)) {
@@ -485,7 +330,9 @@ class Filemanager {
     protected function init() {
         $uploadDir = $this->getUploadDir();
 
-        $this->documentRootDir = $_SERVER['DOCUMENT_ROOT'];
+        if(empty($this->documentRootDir)) {
+            $this->documentRootDir = $_SERVER['DOCUMENT_ROOT'];
+        }
 
         $this->uploadDirFullPath = $this->removeMultipleSlash(rtrim($this->documentRootDir . '/' . $uploadDir, '/'));
 
@@ -494,6 +341,20 @@ class Filemanager {
         }
 
         $this->uploadDir = $this->removeMultipleSlash('/' . rtrim($uploadDir, '/'));
+    }
+
+    /**
+     * @return string
+     */
+    protected function getTempDirLatte(): string {
+        return __DIR__ . '/tempLatte';
+    }
+
+    /**
+     * @return string
+     */
+    protected function getTemplateDir(): string {
+        return __DIR__ . '/template/';
     }
 
 }
