@@ -21,5 +21,6 @@
             "Kevas\\Filemanager\\": "src"
         }
     },
-    "minimum-stability": "dev"
+    "minimum-stability": "dev",
+    "license": "BSD 2"
 }
