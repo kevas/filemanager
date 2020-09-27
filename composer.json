@@ -2,6 +2,7 @@
     "name": "kevas/filemanager",
     "description": "Filemanager for web application",
     "keywords": ["filemanager", "web"],
+    "license": ["BSD-3-Clause", "GPL-2.0-only", "GPL-3.0-only"],
     "authors": [
         {
             "name": "Roman Slancar",
@@ -21,6 +22,5 @@
             "Kevas\\Filemanager\\": "src"
         }
     },
-    "minimum-stability": "dev",
-    "license": "BSD 2"
+    "minimum-stability": "dev"
 }
