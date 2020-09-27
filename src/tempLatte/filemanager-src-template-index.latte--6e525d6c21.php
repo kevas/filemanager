@@ -3,7 +3,7 @@
 
 use Latte\Runtime as LR;
 
-final class Template9faa8f1509 extends Latte\Runtime\Template
+final class Template6e525d6c21 extends Latte\Runtime\Template
 {
 
 	public function main(): array
@@ -17,7 +17,7 @@ final class Template9faa8f1509 extends Latte\Runtime\Template
         <div class="logo">File Manager</div>
 
         <div class="breadcrumbs">
-            <a href="<?php echo LR\Filters::escapeHtmlAttr(LR\Filters::safeUrl($pathInfo)) /* line 8 */ ?>"><i class="fas fa-home"></i></a>
+            <a href="<?php echo LR\Filters::escapeHtmlAttr(LR\Filters::safeUrl($homeBreadCrumbParams)) /* line 8 */ ?>"><i class="fas fa-home"></i></a>
 <?php
 		if (count($breadCrumbs) > 0) {
 ?>
@@ -39,17 +39,17 @@ final class Template9faa8f1509 extends Latte\Runtime\Template
         </div>
 
         <div class="upload"><i class="fas fa-upload"></i>Upload files</div>
-        <div class="new-folder"><i class="far fa-plus-square"></i>New folder</div>
+        <div class="new-folder"><i class="far fa-folder-open"></i>New folder</div>
     </div>
 
-    <div class="filemanager">
+    <div class="filemanager<?php echo LR\Filters::escapeHtmlAttr($isInsertFileParam ? ' insertFile' : '') /* line 22 */ ?>">
 
 <?php
 		if (($this->global->fn->displayParentDir)()) {
 ?>
             <div class="row">
-                <a href="?path=<?php echo LR\Filters::escapeHtmlAttr(LR\Filters::safeUrl(($this->global->fn->getPathParentDir)())) /* line 26 */ ?>" class="folder parent">
-                    <span class="wrapper-value icon"><span class="inner-wrapper-value"><i class="fas fa-arrow-up"></i></span></span>
+                <a href="<?php echo LR\Filters::escapeHtmlAttr(LR\Filters::safeUrl(($this->global->fn->getParamsParentUrlDir)())) /* line 26 */ ?>" class="folder parent">
+                    <span class="wrapper-value icon"><span class="inner-wrapper-value"><i class="fas fa-level-up-alt"></i></span></span>
                 </a>
             </div>
 <?php
@@ -62,7 +62,7 @@ final class Template9faa8f1509 extends Latte\Runtime\Template
 ?>
 
             <div class="row folder">
-                <a href="?path=<?php echo LR\Filters::escapeHtmlAttr(LR\Filters::safeUrl(($this->global->fn->getPath)($dir))) /* line 35 */ ?>" class="folder">
+                <a href="<?php echo LR\Filters::escapeHtmlAttr(LR\Filters::safeUrl(($this->global->fn->getParamsUrlDir)($dir))) /* line 35 */ ?>" class="folder">
                     <span class="wrapper-value icon"><span class="inner-wrapper-value"><i class="far fa-folder"></i></span></span>
                     <span class="wrapper-value filename"><span class="inner-wrapper-value"><?php echo LR\Filters::escapeHtmlText($dir->getFilename()) /* line 37 */ ?></span></span>
                     <span class="wrapper-value size"><span class="inner-wrapper-value">Folder</span></span>
@@ -80,7 +80,7 @@ final class Template9faa8f1509 extends Latte\Runtime\Template
 		foreach ($files as $file) {
 ?>
 
-            <div class="row image">
+            <div class="row file" data-file='<?php echo ($this->global->fn->getDataFile)($file) /* line 47 */ ?>'>
                 <span class="wrapper-value icon"><span class="inner-wrapper-value"><?php echo ($this->global->fn->getFileIcon)($file) /* line 48 */ ?></span></span>
                 <span class="wrapper-value filename"><span class="inner-wrapper-value"><?php echo ($this->global->fn->getFilename)($file) /* line 49 */ ?></span></span>
                 <span class="wrapper-value size"><span class="inner-wrapper-value"><?php echo LR\Filters::escapeHtmlText(($this->global->fn->getHumanFileSize)($file)) /* line 50 */ ?></span></span>
@@ -98,7 +98,7 @@ final class Template9faa8f1509 extends Latte\Runtime\Template
             <div class="empty-content">
                 <div class="empty-content-inner">
                     <button class="btn upload"><i class="fas fa-upload"></i>Upload files</button>
-                    <button class="btn new-folder"><i class="far fa-plus-square"></i>New folder</button>
+                    <button class="btn new-folder"><i class="far fa-folder-open"></i>New folder</button>
                 </div>
             </div>
 <?php
