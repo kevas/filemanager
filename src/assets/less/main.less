@@ -17,7 +17,8 @@ a { color: @color-link; .transition(all 0.2s ease);
     .btn, input { font-family: 'Roboto Condensed', sans-serif; }
 }
 
-.top-bar { position: fixed; display: flex; left: 0; top: 0; background-color: #fff; padding: 10px 20px; width: ~"calc(100% - 40px)";
+.top-bar { position: fixed; display: flex; left: 0; top: 0; background-color: #fff; padding: 10px 20px;
+    width: ~"calc(100% - 40px)";
     box-shadow: 0 4px 5px 0 rgba(0, 0, 0, .14), 0 1px 10px 0 rgba(0, 0, 0, .12), 0 2px 4px -1px rgba(0, 0, 0, .2);
 
     .logo { font-weight: bold; font-size: 24px;  }
@@ -47,7 +48,8 @@ a { color: @color-link; .transition(all 0.2s ease);
             .inner-wrapper-value { padding-left: 15px; display: block; line-height: 0 }
         }
 
-        a.folder { display: flex; width: 100%; align-items: stretch; text-decoration: none; color: @color-link; .transition(all 0.2s ease);
+        a.folder { display: flex; width: 100%; align-items: stretch; text-decoration: none; color: @color-link;
+            .transition(all 0.2s ease);
             &.parent { border-bottom: 1px solid @color-border;
                 .wrapper-value { border-bottom: none }
             }
@@ -60,7 +62,20 @@ a { color: @color-link; .transition(all 0.2s ease);
             &:active { background-color: transparent; }
         }
 
-        &.file .wrapper-value.icon .inner-wrapper-value, &.folder .wrapper-value.icon .inner-wrapper-value { padding-left: 8px }
+        &.folder, &.file {
+            .wrapper-value.icon .inner-wrapper-value,
+
+            .wrapper-value .inner-wrapper-value { position: relative;
+                a { text-decoration: none;  }
+                .action { position: absolute; right: 20px; top: -5px; display: none;
+                    i { font-size: 14px; margin-left: 5px; cursor: pointer; color: #333;
+                        &:hover,
+                        &:focus,
+                        &:active { color: @color-link }
+                    }
+                }
+            }
+        }
 
         &:hover,
         &:focus,
@@ -68,7 +83,7 @@ a { color: @color-link; .transition(all 0.2s ease);
     }
 }
 
-.dropzone-box { position: fixed; top: 150px; left: 150px; right: 150px; bottom: 150px; z-index: 1010; display: none;
+.dropzone { position: fixed; top: 150px; left: 150px; right: 150px; bottom: 150px; z-index: 1010; display: none;
     border: 2px dashed #0087F7; border-radius: 5px; background-color: #fff;
     .dz-message { display: flex; justify-content: center; align-items: center; margin: 0; height: 100%;
         .dz-button { font-size: 20px; color: #646C7F }
@@ -80,8 +95,10 @@ a { color: @color-link; .transition(all 0.2s ease);
     }
 }
 
-.new-folder-box { position: fixed; top: 150px; left: 50%; margin-left: -300px; width: 600px; height: 200px; z-index: 1010; background-color: #fff; display: none;
-    form { display: flex; justify-content: center; align-items: center; margin: 0; height: 100%; padding: 0 40px; position: relative;
+.action-box { position: fixed; top: 150px; left: 50%; margin-left: -300px; width: 600px; height: 200px;
+    z-index: 1010; background-color: #fff; display: none;
+    form { display: flex; justify-content: center; align-items: center; margin: 0; height: 100%;
+        padding: 0 40px; position: relative;
         .form-control { display: inline-block; width: 100%; padding: .375rem .75rem; font-size: 1rem;
             font-weight: 400; line-height: 1.5; color: #495057; background-color: #fff; background-clip: padding-box;
             border: 1px solid #ced4da; border-radius: .25rem;
@@ -95,9 +112,6 @@ a { color: @color-link; .transition(all 0.2s ease);
         }
     }
 }
-
-.dropzone-bg, .new-folder-bg { position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 1000;
-    overflow: hidden; background: #0b0b0b; opacity: .2; display: none; }
 
 .empty-content { height: 300px;
     .empty-content-inner { display: flex; justify-content: center; align-items: center; height: 100%;
@@ -113,4 +127,8 @@ a { color: @color-link; .transition(all 0.2s ease);
     &:focus,
     &:active { background-color: #17559f; }
 }
+
+.overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 1000;
+    overflow: hidden; background: #0b0b0b; opacity: .2; display: none; }
+
 

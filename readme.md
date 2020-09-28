@@ -29,17 +29,16 @@ $filemanager = new Filemanager;
 $filemanager->setUploadDir('user_uploads');
 $filemanagerContent = $filemanager->render();
 ```
-Now you have to copy the assets directory, which is in `vendor/kevas/filemanager/src/assets` and paste it into the root web.
 
 Set css and js path
 ```html
-<link rel="stylesheet" href="/assets/fontawesome/css/all.css">
-<link rel="stylesheet" href="/assets/dropzone/dropzone.css">
-<link rel="stylesheet" href="/assets/filemanager/css/main.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.14.0/css/all.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/dropzone@5.7.0/dist/dropzone.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kevas/filemanager/src/assets/css/main.css">
 
-<script src="/assets/jquery/jquery.js"></script>
-<script src="/assets/dropzone/dropzone.js"></script>
-<script src="/assets/filemanager/js/main.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/dropzone@5.7.2/dist/dropzone.min.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/kevas/filemanager/src/assets/js/main.js"></script>
 ```
 
 Screenshots
