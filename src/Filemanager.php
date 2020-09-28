@@ -41,7 +41,7 @@ class Filemanager {
     public function __construct() {
         $this->latte = new Latte\Engine;
         $this->latte->setTempDirectory($this->getTempDirLatte());
-//        $this->latte->setAutoRefresh(false);
+        $this->latte->setAutoRefresh(false);
     }
 
     /**
@@ -92,6 +92,8 @@ class Filemanager {
         $searchInDir = $this->uploadDirFullPath . '/' . $pathRequest;
 
         $this->createNewDirAction($searchInDir, $pathRequest, $request);
+        $this->renameAction($searchInDir, $pathRequest, $request);
+        $this->removeAction($searchInDir, $pathRequest, $request);
 
         if(!is_dir($searchInDir)) {
             $searchInDir = $this->uploadDirFullPath;
@@ -110,7 +112,8 @@ class Filemanager {
             'files' => $files,
             'breadCrumbs' => $breadCrumbs,
             'homeBreadCrumbParams' => '?path=' .  $this->getInsertFileUriParam($request),
-            'isInsertFileParam' => (!empty($request->get('insertFile', '')))
+            'isInsertFileParam' => (!empty($request->get('insertFile', ''))),
+            'searchInDir' => $searchInDir,
         ]);
     }
 
@@ -144,7 +147,7 @@ class Filemanager {
             return $request->getPathInfo() . '?fileupload=1&path=' . $pathRequest;
         });
 
-        $this->latte->addFunction('getNewDirUrl', function () use ($request, $pathRequest) {
+        $this->latte->addFunction('getPathUrl', function () use ($request, $pathRequest) {
             return $request->getPathInfo() . '?path=' . $pathRequest;
         });
 
@@ -408,20 +411,69 @@ class Filemanager {
     }
 
     /**
-     * @param string $searchDir
+     * @param string $dir
      * @param string $pathRequest
      * @param Request $request
      * @throws FilemanagerException
      */
-    protected function createNewDirAction(string $searchDir, string $pathRequest, Request $request) {
+    protected function createNewDirAction(string $dir, string $pathRequest, Request $request) {
         $newDirName = $request->request->get('folderName', '');
 
         if(!empty($newDirName)) {
 
             try {
-                FileSystem::createDir($this->removeMultipleSlashes($searchDir . '/' . $newDirName));
+                FileSystem::createDir($this->removeMultipleSlashes($dir . '/' . $newDirName));
             } catch (IOException $e) {
                 throw new FilemanagerException('Failed to create directory');
+            }
+
+            $redirect = RedirectResponse::create($request->getPathInfo() . '?path=' . $pathRequest);
+            $redirect->send();
+
+            exit;
+        }
+    }
+
+    /**
+     * @param string $dir
+     * @param string $pathRequest
+     * @param Request $request
+     * @throws FilemanagerException
+     */
+    protected function renameAction(string $dir, string $pathRequest, Request $request) {
+        $originName = $request->request->get('oldEditName', '');
+        $targetName = $request->request->get('editName', '');
+        $ext = $request->request->get('ext', '');
+
+        if(!empty($originName) && !empty($targetName)) {
+
+            $ext = (!empty($ext) ? '.' . $ext : '');
+
+            $origin = $dir . '/' . $originName . $ext;
+            $target = $dir . '/' . $targetName . $ext;
+
+            try {
+                FileSystem::rename($this->removeMultipleSlashes($origin), $this->removeMultipleSlashes($target));
+            } catch (IOException $e) {
+                throw new FilemanagerException($e->getMessage());
+            }
+
+            $redirect = RedirectResponse::create($request->getPathInfo() . '?path=' . $pathRequest);
+            $redirect->send();
+
+            exit;
+        }
+    }
+
+    protected function removeAction(string $dir, string $pathRequest, Request $request) {
+        $name = $request->request->get('removeName', '');
+
+        if(!empty($name)) {
+
+            try {
+                FileSystem::delete($this->removeMultipleSlashes($dir . '/' . $name));
+            } catch (IOException $e) {
+                throw new FilemanagerException($e->getMessage());
             }
 
             $redirect = RedirectResponse::create($request->getPathInfo() . '?path=' . $pathRequest);
@@ -480,5 +532,4 @@ class Filemanager {
     protected function getTemplateDir(): string {
         return __DIR__ . '/template';
     }
-
 }
