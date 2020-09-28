@@ -532,4 +532,5 @@ class Filemanager {
     protected function getTemplateDir(): string {
         return __DIR__ . '/template';
     }
+
 }

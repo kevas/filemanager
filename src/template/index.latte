@@ -19,7 +19,14 @@
         <div class="new-folder"><i class="far fa-folder-open"></i>New folder</div>
     </div>
 
-    <div class="filemanager{$isInsertFileParam ? ' insertFile' : ''}">
+    <div class="filemanager{$isInsertFileParam ? ' insertFile' : ''}" data-path="{getPathUrl()}">
+
+        <div class="row header">
+            <span class="wrapper-value icon"><span class="inner-wrapper-value"></span></span>
+            <span class="wrapper-value filename"><span class="inner-wrapper-value">Name</span></span>
+            <span class="wrapper-value size"><span class="inner-wrapper-value">Size</span></span>
+            <span class="wrapper-value time"><span class="inner-wrapper-value">Modified</span></span>
+        </div>
 
         {if displayParentDir()}
             <div class="row">
@@ -34,7 +41,17 @@
             <div class="row folder">
                 <a href="{getParamsUrlDir($dir)}" class="folder">
                     <span class="wrapper-value icon"><span class="inner-wrapper-value"><i class="far fa-folder"></i></span></span>
-                    <span class="wrapper-value filename"><span class="inner-wrapper-value">{$dir->getFilename()}</span></span>
+                    <span class="wrapper-value filename">
+                        <span class="inner-wrapper-value">
+                            <span class="name" data-name="{$dir->getBasename()}">
+                                {$dir->getFilename()}
+                            </span>
+                            <span class="action">
+                                <i class="far fa-edit edit"></i>
+                                <i class="far fa-trash-alt remove"></i>
+                            </span>
+                        </span>
+                    </span>
                     <span class="wrapper-value size"><span class="inner-wrapper-value">Folder</span></span>
                     <span class="wrapper-value time"><span class="inner-wrapper-value">{date('d.m.Y H:i', $dir->getMTime())}</span></span>
                 </a>
@@ -46,7 +63,17 @@
 
             <div class="row file" data-file='{getDataFile($file)|noescape}'>
                 <span class="wrapper-value icon"><span class="inner-wrapper-value">{getFileIcon($file)|noescape}</span></span>
-                <span class="wrapper-value filename"><span class="inner-wrapper-value">{getFilename($file)|noescape}</span></span>
+                <span class="wrapper-value filename">
+                    <span class="inner-wrapper-value">
+                        <span class="name" data-name="{$file->getBasename('.' . $file->getExtension())}" data-ext="{$file->getExtension()}">
+                            {getFilename($file)|noescape}
+                        </span>
+                        <span class="action">
+                            <i class="far fa-edit edit"></i>
+                            <i class="far fa-trash-alt remove"></i>
+                        </span>
+                    </span>
+                </span>
                 <span class="wrapper-value size"><span class="inner-wrapper-value">{getHumanFileSize($file)}</span></span>
                 <span class="wrapper-value time"><span class="inner-wrapper-value">{date('d.m.Y H:i', $file->getMTime())}</span></span>
             </div>
@@ -64,20 +91,30 @@
 
     </div>
 
-    <div class="dropzone-bg"></div>
-    <form action="{getDropzoneUrl()}" class="dropzone-box">
+    <div class="overlay"></div>
+
+    <form action="{getDropzoneUrl()}" class="dropzone" id="dropzoneBox">
         <i class="fas fa-times"></i>
         <div class="dz-message needsclick">
             <button type="button" class="dz-button">Drop files here or click to upload.</button>
         </div>
     </form>
 
-    <div class="new-folder-bg"></div>
-    <div class="new-folder-box">
-        <form action="{getNewDirUrl()}" method="post">
+    <div class="new-folder-box action-box">
+        <form action="{getPathUrl()}" method="post">
             <i class="fas fa-times"></i>
             <input type="text" name="folderName" class="form-control" placeholder="Name of folder">
             <input type="submit" value="Create" class="btn">
+        </form>
+    </div>
+
+    <div class="edit-box action-box">
+        <form action="{getPathUrl()}" method="post">
+            <i class="fas fa-times"></i>
+            <input type="text" name="editName" class="form-control">
+            <input type="hidden" name="oldEditName">
+            <input type="hidden" name="ext">
+            <input type="submit" value="Edit" class="btn">
         </form>
     </div>
 
