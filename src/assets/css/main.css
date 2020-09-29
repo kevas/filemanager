@@ -45,6 +45,7 @@ a:active {
   top: 0;
   background-color: #fff;
   padding: 10px 20px;
+  z-index: 1000;
   width: calc(100% - 40px);
   box-shadow: 0 4px 5px 0 rgba(0, 0, 0, 0.14), 0 1px 10px 0 rgba(0, 0, 0, 0.12), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
 }
@@ -102,6 +103,20 @@ a:active {
   -o-transition: all 0.2s ease;
   transition: all 0.2s ease;
 }
+.filemanager .row.header {
+  font-weight: bold;
+  border-bottom: 2px solid #dee2e6;
+}
+.filemanager .row.header .filename .inner-wrapper-value {
+  position: relative;
+  left: -45px;
+  top: 0;
+}
+.filemanager .row.header:hover,
+.filemanager .row.header:focus,
+.filemanager .row.header:active {
+  background-color: transparent;
+}
 .filemanager .row .wrapper-value,
 .filemanager .row a .wrapper-value {
   display: flex;
@@ -152,20 +167,6 @@ a:active {
 .filemanager .row a.folder.parent .wrapper-value {
   border-bottom: none;
 }
-.filemanager .row.header {
-  font-weight: bold;
-  border-bottom: 2px solid #dee2e6;
-}
-.filemanager .row.header .filename .inner-wrapper-value {
-  position: relative;
-  left: -45px;
-  top: 0;
-}
-.filemanager .row.header:hover,
-.filemanager .row.header:focus,
-.filemanager .row.header:active {
-  background-color: transparent;
-}
 .filemanager .row.folder .wrapper-value.icon .inner-wrapper-value,
 .filemanager .row.file .wrapper-value.icon .inner-wrapper-value,
 .filemanager .row.folder .wrapper-value .inner-wrapper-value,
@@ -184,17 +185,18 @@ a:active {
 .filemanager .row.file .wrapper-value .inner-wrapper-value .action {
   position: absolute;
   right: 20px;
-  top: -5px;
+  top: -12px;
   display: none;
 }
 .filemanager .row.folder .wrapper-value.icon .inner-wrapper-value .action i,
 .filemanager .row.file .wrapper-value.icon .inner-wrapper-value .action i,
 .filemanager .row.folder .wrapper-value .inner-wrapper-value .action i,
 .filemanager .row.file .wrapper-value .inner-wrapper-value .action i {
-  font-size: 14px;
-  margin-left: 5px;
+  font-size: 15px;
+  margin-left: 0px;
   cursor: pointer;
   color: #333;
+  padding: 5px;
 }
 .filemanager .row.folder .wrapper-value.icon .inner-wrapper-value .action i:hover,
 .filemanager .row.file .wrapper-value.icon .inner-wrapper-value .action i:hover,
@@ -210,10 +212,20 @@ a:active {
 .filemanager .row.file .wrapper-value .inner-wrapper-value .action i:active {
   color: #006aeb;
 }
+.filemanager .row.folder .wrapper-value.icon .inner-wrapper-value .action .choose-file,
+.filemanager .row.file .wrapper-value.icon .inner-wrapper-value .action .choose-file,
+.filemanager .row.folder .wrapper-value .inner-wrapper-value .action .choose-file,
+.filemanager .row.file .wrapper-value .inner-wrapper-value .action .choose-file {
+  margin-right: 12px;
+  display: none;
+}
 .filemanager .row:hover,
 .filemanager .row:focus,
 .filemanager .row:active {
   background-color: #f6f6f6;
+}
+.filemanager.insertFile .choose-file {
+  display: inline-block !important;
 }
 .dropzone {
   position: fixed;

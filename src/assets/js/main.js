@@ -24,29 +24,59 @@ filemanager.main = (function(scope) {
         });
 
         $(document.body).append(form);
-        form.submit();
+        form.trigger('submit');
     }
 
-    scope.topBar = function () {
-        $('.top-bar .upload, .empty-content .upload').on('click', function () {
-            $('.dropzone, .overlay').show();
-        })
+    let isValueValid = function(value){
+        if(!value) {
+            return false;
+        }
 
-        $('.dropzone .fa-times').on('click', function () {
-            $('.dropzone, .overlay').hide();
-        })
+        let rg1 = /^[^\\/:\*\?"<>\|]+$/;
+        let rg2 = /^\./;
+        let rg3 = /^(nul|prn|con|lpt[0-9]|com[0-9])(\.|$)/i;
+
+        return rg1.test(value)&&!rg2.test(value)&&!rg3.test(value);
+    }
+
+    let validateName = function(value, $form){
+
+        if(!value) {
+            alert(__filemanagerMessages.notEmpty);
+        } else {
+
+            if(isValueValid(value)) {
+                $form.off('submit');
+                $form.trigger('submit');
+            } else {
+                alert(__filemanagerMessages.illegalCharacters);
+            }
+        }
+    }
+
+    let newFolder = function(){
+        let $newNameFolder = $('.new-folder-box input[type="text"]');
+        let $newFolderForm = $('.new-folder-box form');
 
         $('.top-bar .new-folder, .empty-content .new-folder').on('click', function () {
             $('.new-folder-box, .overlay').show();
+            $newNameFolder.trigger('focus');
         })
+
+        $newFolderForm.on('submit',function(e) {
+            e.preventDefault();
+            validateName($newNameFolder.val(), $newFolderForm);
+        });
 
         $('.new-folder-box .fa-times').on('click', function () {
             $('.new-folder-box, .overlay').hide();
         })
-    };
+    }
 
-    scope.filemanager = function () {
+    let actionOnRow = function () {
+
         let $row = $('.filemanager .row.file, .filemanager .row.folder');
+        let $blocks = $('.edit-box, .overlay');
 
         $row.on('mouseover', function () {
             $(this).find('.action').show();
@@ -58,25 +88,36 @@ filemanager.main = (function(scope) {
 
         $('.filemanager .action i.edit').on('click', function (e) {
             e.preventDefault();
-            $('.edit-box, .overlay').show();
 
-            let name = $(this).parents('.row').find('.filename .name').attr('data-name');
-            let ext = $(this).parents('.row').find('.filename .name').attr('data-ext');
+            let $name = $(this).parents('.row').find('.filename .name');
+
+            $blocks.show();
+
+            let name = $name.attr('data-name');
+            let ext = $name.attr('data-ext');
             $('.edit-box input[name="editName"], .edit-box input[name="oldEditName"]').val(name);
             $('.edit-box input[name="ext"]').val(ext);
         })
 
+        let $editForm = $('.edit-box form');
+        $editForm.on('submit',function(e) {
+            e.preventDefault();
+            validateName($('.edit-box input[type="text"]').val(), $editForm);
+        });
+
         $('.edit-box .fa-times').on('click', function () {
-            $('.edit-box, .overlay').hide();
+            $blocks.hide();
         })
 
         $('.filemanager .action i.remove').on('click', function (e) {
             e.preventDefault();
 
-            let result = confirm('Are you sure');
+            let $name = $(this).parents('.row').find('.filename .name');
+
+            let result = confirm(__filemanagerMessages.sure);
             if (result) {
-                let name = $(this).parents('.row').find('.filename .name').attr('data-name');
-                let ext = $(this).parents('.row').find('.filename .name').attr('data-ext');
+                let name = $name.attr('data-name');
+                let ext = $name.attr('data-ext');
 
                 name = (ext ? name + '.' + ext : name);
 
@@ -84,11 +125,31 @@ filemanager.main = (function(scope) {
 
             }
         })
+
+    };
+
+    let dropzone = function () {
+
+        $('.top-bar .upload, .empty-content .upload').on('click', function () {
+            $('.dropzone, .overlay').show();
+        })
+
+        $('.dropzone .fa-times').on('click', function () {
+            $('.dropzone, .overlay').hide();
+        })
+
+    }
+
+    scope.filemanager = function () {
+        dropzone();
+        newFolder();
+        actionOnRow();
     };
 
     scope.insertFile = function () {
-        $('.filemanager.insertFile .row.file').on('dblclick',function(e) {
-            let dataFile = JSON.parse( $(this).attr('data-file'));
+        $('.filemanager.insertFile .row.file .choose-file').on('click',function(e) {
+            e.preventDefault();
+            let dataFile = JSON.parse($(this).parents('.row').attr('data-file'));
             $(document).trigger('filemanagerInsertFile', [$(this), dataFile]);
         });
     };
@@ -98,10 +159,8 @@ filemanager.main = (function(scope) {
 }(filemanager.main || {}));
 
 Dropzone.autoDiscover = false;
-
 $(function() {
 
-    filemanager.main.topBar();
     filemanager.main.filemanager();
     filemanager.main.insertFile();
 

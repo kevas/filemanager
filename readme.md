@@ -1,10 +1,11 @@
 # Filemanager for web application
 
-Simple and intuitive file manager.
+Simple and intuitive file manager for web application.
 
 What it can really do?
-- creating directories
-- upload a file by dragging from disk
+- create directory
+- edit / remove file or directory
+- upload files by dragging from disk
 - possibility of integration into wysiwyg editor
 
 Instalation

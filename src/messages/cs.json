@@ -1,0 +1,17 @@
+{
+  "File Manager": "File Manager",
+  "Upload files": "Nahrát soubory",
+  "New folder": "Nový adresář",
+  "Name": "Název",
+  "Size": "Velikost",
+  "Modified": "Modifikováno",
+  "Folder": "Adresář",
+  "choose file": "vybrat soubor",
+  "Drop files here or click to upload.": "Sem přetáhněte soubory nebo je nahrajte kliknutím.",
+  "Name of folder": "Název adresáře",
+  "Name cannot be empty": "Název nemůže bát prázdný",
+  "The name contains illegal characters": "Název obsahuje nepovolené znaky",
+  "Are you sure?": "Jste si jistý?",
+  "Create": "Vytvořit",
+  "Edit": "Editovat"
+}

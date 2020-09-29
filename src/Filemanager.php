@@ -38,6 +38,19 @@ class Filemanager {
      */
     private $uploadDirFullPath;
 
+    /**
+     * @var string
+     */
+    private $lang = 'en';
+
+    /**
+     * @var array
+     */
+    private $message;
+
+    /**
+     * Filemanager constructor.
+     */
     public function __construct() {
         $this->latte = new Latte\Engine;
         $this->latte->setTempDirectory($this->getTempDirLatte());
@@ -66,6 +79,15 @@ class Filemanager {
      */
     public function setUploadDir(string $uploadDir): Filemanager {
         $this->uploadDir = $uploadDir;
+        return $this;
+    }
+
+    /**
+     * @param string $lang
+     * @return Filemanager
+     */
+    public function setLang(string $lang): Filemanager {
+        $this->lang = $lang;
         return $this;
     }
 
@@ -132,7 +154,7 @@ class Filemanager {
         });
 
         $this->latte->addFunction('getHumanFileSize', function (SplFileInfo $file) {
-            return $this->getHumanFileSize($file->getMTime());
+            return $this->getHumanFileSize($file->getSize());
         });
 
         $this->latte->addFunction('displayParentDir', function () use ($pathRequest) {
@@ -161,6 +183,10 @@ class Filemanager {
 
         $this->latte->addFunction('getDataFile', function (SplFileInfo $file) {
             return $this->getDataFile($file);
+        });
+
+        $this->latte->addFunction('getMessage', function ($text) {
+            return $this->message[$text] ?? $text;
         });
     }
 
@@ -417,12 +443,12 @@ class Filemanager {
      * @throws FilemanagerException
      */
     protected function createNewDirAction(string $dir, string $pathRequest, Request $request) {
-        $newDirName = $request->request->get('folderName', '');
+        $name = $request->request->get('folderName', '');
 
-        if(!empty($newDirName)) {
+        if(!empty($name)) {
 
             try {
-                FileSystem::createDir($this->removeMultipleSlashes($dir . '/' . $newDirName));
+                FileSystem::createDir($this->removeMultipleSlashes($dir . '/' . $name));
             } catch (IOException $e) {
                 throw new FilemanagerException('Failed to create directory');
             }
@@ -465,6 +491,12 @@ class Filemanager {
         }
     }
 
+    /**
+     * @param string $dir
+     * @param string $pathRequest
+     * @param Request $request
+     * @throws FilemanagerException
+     */
     protected function removeAction(string $dir, string $pathRequest, Request $request) {
         $name = $request->request->get('removeName', '');
 
@@ -517,13 +549,21 @@ class Filemanager {
         }
 
         $this->uploadDir = $this->removeMultipleSlashes('/' . rtrim($uploadDir, '/'));
+
+        $langMessageFile = __DIR__ . '/messages/' . $this->lang . '.json';
+
+        if(!file_exists($langMessageFile)) {
+            $langMessageFile = __DIR__ . '/messages/en.json';
+        }
+
+        $this->message = json_decode(FileSystem::read($langMessageFile), true);
     }
 
     /**
      * @return string
      */
     protected function getTempDirLatte(): string {
-        return __DIR__ . '/tempLatte';
+        return $this->getTemplateDir() . '/temp';
     }
 
     /**
