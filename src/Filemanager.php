@@ -244,13 +244,30 @@ class Filemanager {
             return $this->getDataFile($file);
         });
 
-        $this->latte->addFunction('getDataFolder', function (SplFileInfo $folder) {
-            return $this->getDataFolder($folder);
+        $this->latte->addFunction('getDataDir', function (SplFileInfo $dir) {
+            return $this->getDataDir($dir);
         });
 
         $this->latte->addFunction('getMessage', function ($text) {
             return $this->message[$text] ?? $text;
         });
+
+        $this->latte->addFunction('getClassNameActiveRow', function (SplFileInfo $file, string $nameParam) use ($request) {
+            return $this->getClassNameActiveRow($file, $request, $nameParam);
+        });
+    }
+
+    /**
+     * @param SplFileInfo $file
+     * @param Request $request
+     * @param string $nameParam
+     * @return string
+     */
+    protected function getClassNameActiveRow(SplFileInfo $file, Request $request, string $nameParam): string {
+        $selectedFileParam = $request->get($nameParam, '');
+        $selectedFile = $this->removeMultipleSlashes($this->documentRootDir . '/' . trim($selectedFileParam, '/'));
+
+        return (!empty($selectedFileParam) && $selectedFile == $file->getRealPath() ? 'active' : '');
     }
 
     /**
@@ -270,7 +287,7 @@ class Filemanager {
      * @param SplFileInfo $folder
      * @return string
      */
-    protected function getDataFolder(SplFileInfo $folder): string {
+    protected function getDataDir(SplFileInfo $folder): string {
         return json_encode([
             'path' => str_replace($this->documentRootDir, '', $folder->getRealPath())
         ]);

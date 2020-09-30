@@ -3,7 +3,7 @@
 
 use Latte\Runtime as LR;
 
-final class Template4706e87f75 extends Latte\Runtime\Template
+final class Template7604a09b4a extends Latte\Runtime\Template
 {
 
 	public function main(): array
@@ -71,7 +71,8 @@ final class Template4706e87f75 extends Latte\Runtime\Template
 		foreach ($dirs as $dir) {
 ?>
 
-            <div class="row folder" data-folder='<?php echo ($this->global->fn->getDataFolder)($dir) /* line 41 */ ?>'>
+            <div class="row folder <?php echo LR\Filters::escapeHtmlAttr(($this->global->fn->getClassNameActiveRow)($dir, 'selectedFolder')) /* line 41 */ ?>" data-folder='<?php
+			echo ($this->global->fn->getDataDir)($dir) /* line 41 */ ?>'>
                 <a href="<?php echo LR\Filters::escapeHtmlAttr(LR\Filters::safeUrl(($this->global->fn->getDirUrl)($dir))) /* line 42 */ ?>" class="folder">
                     <span class="wrapper-value icon"><span class="inner-wrapper-value"><i class="far fa-folder"></i></span></span>
                     <span class="wrapper-value filename">
@@ -102,7 +103,8 @@ final class Template4706e87f75 extends Latte\Runtime\Template
 		foreach ($files as $file) {
 ?>
 
-            <div class="row file" data-file='<?php echo ($this->global->fn->getDataFile)($file) /* line 65 */ ?>'>
+            <div class="row file <?php echo LR\Filters::escapeHtmlAttr(($this->global->fn->getClassNameActiveRow)($file, 'selectedFile')) /* line 65 */ ?>" data-file='<?php
+			echo ($this->global->fn->getDataFile)($file) /* line 65 */ ?>'>
                 <span class="wrapper-value icon"><span class="inner-wrapper-value"><?php echo ($this->global->fn->getFileIcon)($file) /* line 66 */ ?></span></span>
                 <span class="wrapper-value filename">
                     <span class="inner-wrapper-value">
