@@ -146,12 +146,20 @@ filemanager.main = (function(scope) {
         actionOnRow();
     };
 
-    scope.insertFile = function () {
+    scope.insert = function () {
+
         $('.filemanager.insertFile .row.file .choose-file').on('click',function(e) {
             e.preventDefault();
             let dataFile = JSON.parse($(this).parents('.row').attr('data-file'));
             $(document).trigger('filemanagerInsertFile', [$(this), dataFile]);
         });
+
+        $('.filemanager.insertFolder .row.folder .choose-folder').on('click',function(e) {
+            e.preventDefault();
+            let dataFolder = JSON.parse($(this).parents('.row').attr('data-folder'));
+            $(document).trigger('filemanagerInsertFolder', [$(this), dataFolder]);
+        });
+
     };
 
     return scope;
@@ -162,7 +170,7 @@ Dropzone.autoDiscover = false;
 $(function() {
 
     filemanager.main.filemanager();
-    filemanager.main.insertFile();
+    filemanager.main.insert();
 
     let $dropzoneBox = $('#dropzoneBox');
 

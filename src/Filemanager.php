@@ -101,12 +101,23 @@ class Filemanager {
 
         $request = Request::createFromGlobals();
         $pathRequest = $request->get('path', '');
-        $fileRequest = $request->get('file', '');
-        $insertFileRequest = $request->get('insertFile', '');
+        $ignoreRedirectRequest = $request->get('ignoreRedirect', '');
 
-        if(!empty($fileRequest) && !empty($insertFileRequest)) {
-            $fileRequestDirname = pathinfo($fileRequest)['dirname'];
-            $pathRequest = trim($this->removeMultipleSlashes(str_replace($this->uploadDir, '', $fileRequestDirname)), '/');
+        $selectedFileRequest = $request->get('selectedFile', '');
+        $idFileRequest = $request->get('idFile', '');
+
+        $selectedFolderRequest = $request->get('selectedFolder', '');
+        $idFolderRequest = $request->get('idFolder', '');
+
+        if(!empty($selectedFileRequest) && !empty($idFileRequest) && empty($ignoreRedirectRequest)) {
+            $pathRequest = $this->getPathRequestInsertFile($selectedFileRequest);
+        }
+
+        if(!empty($selectedFolderRequest) && !empty($idFolderRequest) && empty($ignoreRedirectRequest)) {
+            $pathRequest = $this->getPathRequestInsertDir($selectedFolderRequest);
+
+            $redirect = RedirectResponse::create($request->getPathInfo() . '?path=' . $pathRequest . $this->getAllUrlParamsExceptPathParam($request));
+            $redirect->send();
         }
 
         $this->filesUploadAction($request);
@@ -133,10 +144,58 @@ class Filemanager {
             'dirs' => $dirs,
             'files' => $files,
             'breadCrumbs' => $breadCrumbs,
-            'homeBreadCrumbParams' => '?path=' .  $this->getInsertFileUriParam($request),
-            'isInsertFileParam' => (!empty($request->get('insertFile', ''))),
+            'homeBreadCrumbParams' => '?path=' .  $this->getAllUrlParamsExceptPathParam($request),
+            'isInsertFileParam' => (!empty($idFileRequest)),
+            'isInsertFolderParam' => (!empty($idFolderRequest)),
             'searchInDir' => $searchInDir,
         ]);
+    }
+
+    /**
+     * @param Request $request
+     * @return string
+     */
+    protected function getAllUrlParamsExceptPathParam(Request $request): string {
+        $urlParams = '';
+
+        $params = $request->query->all();
+
+        foreach($params as $name => $value) {
+
+            if($name == 'path') {
+                continue;
+            }
+
+            $urlParams .= '&' . $name . '=' . $value;
+
+        }
+
+        return $urlParams . '&ignoreRedirect=1';
+    }
+
+    /**
+     * @param string $fileRequest
+     * @return string
+     */
+    protected function getPathRequestInsertFile(string $fileRequest): string {
+        $fileRequestDirname = pathinfo($fileRequest)['dirname'];
+        return trim($this->removeMultipleSlashes(str_replace(trim($this->uploadDir, '/'), '', $fileRequestDirname)), '/');
+    }
+
+    /**
+     * @param string $folderRequest
+     * @return string
+     */
+    protected function getPathRequestInsertDir(string $folderRequest): string {
+        $pathRequest = '';
+        $folderRequestArr = array_filter(explode('/', $folderRequest));
+
+        if(count($folderRequestArr) > 1) {
+            array_pop($folderRequestArr);
+            $pathRequest = trim($this->removeMultipleSlashes(str_replace(trim($this->uploadDir, '/'), '', implode('/', $folderRequestArr))), '/');
+        }
+
+        return $pathRequest;
     }
 
     /**
@@ -145,8 +204,8 @@ class Filemanager {
      * @param array $breadCrumbs
      */
     protected function addLatteFunction(string $pathRequest, Request $request, array $breadCrumbs) {
-        $this->latte->addFunction('getParamsUrlDir', function (SplFileInfo $file) use ($pathRequest, $request) {
-            return $this->getParamsUrlDir($file, $pathRequest, $request);
+        $this->latte->addFunction('getDirUrl', function (SplFileInfo $file) use ($pathRequest, $request) {
+            return $this->getDirUrl($file, $pathRequest, $request);
         });
 
         $this->latte->addFunction('getFileIcon', function (SplFileInfo $file) {
@@ -158,19 +217,19 @@ class Filemanager {
         });
 
         $this->latte->addFunction('displayParentDir', function () use ($pathRequest) {
-            return $this->displayParentDir($pathRequest);
+            return $this->isMultiplePath($pathRequest);
         });
 
-        $this->latte->addFunction('getParamsParentUrlDir', function () use ($pathRequest, $request) {
-            return $this->getParamsParentUrlDir($pathRequest, $request);
+        $this->latte->addFunction('getUrlParamsParentDir', function () use ($pathRequest, $request) {
+            return $this->getUrlParamsParentDir($pathRequest, $request);
         });
 
         $this->latte->addFunction('getDropzoneUrl', function () use ($request, $pathRequest) {
-            return $request->getPathInfo() . '?fileupload=1&path=' . $pathRequest;
+            return $request->getPathInfo() . '?fileupload=1&path=' . $pathRequest . $this->getAllUrlParamsExceptPathParam($request);
         });
 
         $this->latte->addFunction('getPathUrl', function () use ($request, $pathRequest) {
-            return $request->getPathInfo() . '?path=' . $pathRequest;
+            return $request->getPathInfo() . '?path=' . $pathRequest . $this->getAllUrlParamsExceptPathParam($request);
         });
 
         $this->latte->addFunction('getBreadCrumbItem', function ($breadCrumbValue) use ($breadCrumbs, $request) {
@@ -183,6 +242,10 @@ class Filemanager {
 
         $this->latte->addFunction('getDataFile', function (SplFileInfo $file) {
             return $this->getDataFile($file);
+        });
+
+        $this->latte->addFunction('getDataFolder', function (SplFileInfo $folder) {
+            return $this->getDataFolder($folder);
         });
 
         $this->latte->addFunction('getMessage', function ($text) {
@@ -204,14 +267,24 @@ class Filemanager {
     }
 
     /**
+     * @param SplFileInfo $folder
+     * @return string
+     */
+    protected function getDataFolder(SplFileInfo $folder): string {
+        return json_encode([
+            'path' => str_replace($this->documentRootDir, '', $folder->getRealPath())
+        ]);
+    }
+
+    /**
      * @param SplFileInfo $file
      * @param string $pathRequest
      * @param Request $request
      * @return string
      */
-    protected function getParamsUrlDir(SplFileInfo $file, string $pathRequest, Request $request): string {
+    protected function getDirUrl(SplFileInfo $file, string $pathRequest, Request $request): string {
         $path = urlencode((!empty($pathRequest) ? $pathRequest . '/' : '') . $file->getFilename());
-        return '?path=' . $path . $this->getInsertFileUriParam($request);
+        return '?path=' . $path . $this->getAllUrlParamsExceptPathParam($request);
     }
 
     /**
@@ -219,7 +292,7 @@ class Filemanager {
      * @param Request $request
      * @return string
      */
-    protected function getParamsParentUrlDir(string $path, Request $request): string {
+    protected function getUrlParamsParentDir(string $path, Request $request): string {
         $pathArr = array_filter(explode('/', $path));
         $countPath = count($pathArr);
 
@@ -230,16 +303,7 @@ class Filemanager {
             $path = ($countPath > 1 ? implode('/', $pathArr) : '');
         }
 
-        return '?path=' . $path . $this->getInsertFileUriParam($request);
-    }
-
-    /**
-     * @param Request $request
-     * @return string
-     */
-    protected function getInsertFileUriParam(Request $request): string {
-        $insertFileParam = $request->get('insertFile', '');
-        return (!empty($insertFileParam) ? '&insertFile=' . $insertFileParam: '');
+        return '?path=' . $path . $this->getAllUrlParamsExceptPathParam($request);
     }
 
     /**
@@ -250,7 +314,7 @@ class Filemanager {
 
         $link = str_replace($this->documentRootDir, '', $file->getPathname());
 
-        if($this->isImageFileType($file)) {
+        if($this->isFileImage($file)) {
             $filename = Html::el('a')->addAttributes([
                 'onclick' => 'window.open(\'' . $link . '\', \'_blank\', \'width=800,height=500\');',
                 'href' => '#'
@@ -295,7 +359,7 @@ class Filemanager {
 
         $path = rtrim($path, '/');
         return Html::el('a')
-            ->setAttribute('href', '?path=' . $path . $this->getInsertFileUriParam($request))
+            ->setAttribute('href', '?path=' . $path . $this->getAllUrlParamsExceptPathParam($request))
             ->setText($breadCrumbValue)->render();
     }
 
@@ -308,7 +372,7 @@ class Filemanager {
     protected function getFileIcon(SplFileInfo $file) {
         $extension = $file->getExtension();
 
-        if($this->isImageFileType($file)) {
+        if($this->isFileImage($file)) {
             $fileIcon = $this->getImageThumb($file);
         } else if($extension == 'xls' || $extension == 'xlsx') {
             $fileIcon = '<i class="far fa-file-excel"></i>';
@@ -357,7 +421,7 @@ class Filemanager {
      * @param string $path
      * @return bool
      */
-    protected function displayParentDir(string $path): bool {
+    protected function isMultiplePath(string $path): bool {
         $pathArr = array_filter(explode('/', $path));
         return (count($pathArr) > 0);
     }
@@ -411,7 +475,7 @@ class Filemanager {
      * @param SplFileInfo $file
      * @return bool
      */
-    protected function isImageFileType(SplFileInfo $file): bool {
+    protected function isFileImage(SplFileInfo $file): bool {
         $imageExtensions = ['jpg', 'jpeg', 'png', 'gif', 'bnp'];
         return (in_array($file->getExtension(), $imageExtensions));
     }
@@ -453,7 +517,7 @@ class Filemanager {
                 throw new FilemanagerException('Failed to create directory');
             }
 
-            $redirect = RedirectResponse::create($request->getPathInfo() . '?path=' . $pathRequest);
+            $redirect = RedirectResponse::create($request->getPathInfo() . '?path=' . $pathRequest . $this->getAllUrlParamsExceptPathParam($request));
             $redirect->send();
 
             exit;
@@ -484,7 +548,7 @@ class Filemanager {
                 throw new FilemanagerException($e->getMessage());
             }
 
-            $redirect = RedirectResponse::create($request->getPathInfo() . '?path=' . $pathRequest);
+            $redirect = RedirectResponse::create($request->getPathInfo() . '?path=' . $pathRequest . $this->getAllUrlParamsExceptPathParam($request));
             $redirect->send();
 
             exit;
@@ -508,7 +572,7 @@ class Filemanager {
                 throw new FilemanagerException($e->getMessage());
             }
 
-            $redirect = RedirectResponse::create($request->getPathInfo() . '?path=' . $pathRequest);
+            $redirect = RedirectResponse::create($request->getPathInfo() . '?path=' . $pathRequest . $this->getAllUrlParamsExceptPathParam($request));
             $redirect->send();
 
             exit;

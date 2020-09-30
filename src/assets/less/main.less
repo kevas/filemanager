@@ -1,8 +1,12 @@
 @import url('https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@400;700&display=swap');
 
+@color-main: #222;
 @color-border: #f1f1f1;
-@color-link: #006aeb;
-@color-active: #909eb5;
+@color-link: #222;
+@color-link-active: #006aeb;
+
+@color-btn: @color-link-active;
+@color-btn-active: #00469f;
 
 .transition(@transition) { -webkit-transition: @transition; -moz-transition: @transition; -ms-transition: @transition; -o-transition: @transition; transition: @transition; }
 
@@ -10,10 +14,10 @@ body { background-color: #F7F7F7; padding: 0; margin: 0 }
 a { color: @color-link; .transition(all 0.2s ease);
     &:hover,
     &:focus,
-    &:active { color: @color-active; }
+    &:active { color: @color-link-active; }
 }
 
-.container-filemanager { font-family: 'Roboto Condensed', sans-serif; color: #333;
+.container-filemanager { font-family: 'Roboto Condensed', sans-serif; color: @color-main;
     .btn, input { font-family: 'Roboto Condensed', sans-serif; }
 }
 
@@ -31,7 +35,7 @@ a { color: @color-link; .transition(all 0.2s ease);
     .upload, .new-folder { margin-top: 5px; cursor: pointer; .transition(all 0.2s ease);
         &:hover,
         &:focus,
-        &:active { color: @color-link; }
+        &:active { color: @color-link-active; }
     }
     i { margin-right: 4px }
 }
@@ -69,23 +73,28 @@ a { color: @color-link; .transition(all 0.2s ease);
             .wrapper-value .inner-wrapper-value { position: relative;
                 a { text-decoration: none;  }
                 .action { position: absolute; right: 20px; top: -12px; display: none;
-                    i { font-size: 15px; margin-left: 0px; cursor: pointer; color: #333; padding: 5px;
+                    i { font-size: 15px; margin-left: 0; cursor: pointer; padding: 5px; color: @color-link; .transition(all 0.2s ease);
                         &:hover,
                         &:focus,
-                        &:active { color: @color-link }
+                        &:active { color: @color-link-active }
                     }
-                    .choose-file { margin-right: 12px; display: none }
+                    .choose { margin-right: 12px; display: none; color: @color-link; .transition(all 0.2s ease); cursor: pointer;
+                        &:hover,
+                        &:focus,
+                        &:active { color: @color-link-active }
+                    }
                 }
             }
         }
 
         &:hover,
         &:focus,
-        &:active { background-color: #f6f6f6; }
+        &:active { background-color: #f8f8f8; }
     }
 }
 
 .filemanager.insertFile .choose-file { display: inline-block !important; }
+.filemanager.insertFolder .choose-folder { display: inline-block !important; }
 
 .dropzone { position: fixed; top: 150px; left: 150px; right: 150px; bottom: 150px; z-index: 1010; display: none;
     border: 2px dashed #0087F7; border-radius: 5px; background-color: #fff;
@@ -108,11 +117,11 @@ a { color: @color-link; .transition(all 0.2s ease);
             border: 1px solid #ced4da; border-radius: .25rem;
         }
 
-        .fa-times { position: absolute; right: 20px; top: 15px; font-size: 20px; cursor: pointer; color: #000;
+        .fa-times { position: absolute; right: 20px; top: 15px; font-size: 20px; cursor: pointer; color: @color-link;
             .transition(all 0.2s ease);
             &:hover,
             &:focus,
-            &:active { color: @color-link; }
+            &:active { color: @color-link-active; }
         }
     }
 }
@@ -124,12 +133,12 @@ a { color: @color-link; .transition(all 0.2s ease);
     }
 }
 
-.btn { display: inline-block; background-color: @color-link; color: #fff; padding: .5rem 1.4rem; user-select: none; cursor: pointer;
+.btn { display: inline-block; background-color: @color-btn; color: #fff; padding: .5rem 1.4rem; user-select: none; cursor: pointer;
     font-size: .9rem; line-height: 1.5; border-radius: .25rem; border: none; text-transform: uppercase; margin-left: 5px;
     .transition(all 0.2s ease);
     &:hover,
     &:focus,
-    &:active { background-color: #17559f; }
+    &:active { background-color: @color-btn-active; }
 }
 
 .overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 1000;

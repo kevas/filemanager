@@ -19,7 +19,7 @@
         <div class="new-folder"><i class="far fa-folder-open"></i>{getMessage('New folder')}</div>
     </div>
 
-    <div class="filemanager{$isInsertFileParam ? ' insertFile' : ''}" data-path="{getPathUrl()}">
+    <div class="filemanager{$isInsertFileParam ? ' insertFile' : ''}{$isInsertFolderParam ? ' insertFolder' : ''}" data-path="{getPathUrl()}">
 
         <div class="row header">
             <span class="wrapper-value icon"><span class="inner-wrapper-value"></span></span>
@@ -30,7 +30,7 @@
 
         {if displayParentDir()}
             <div class="row">
-                <a href="{getParamsParentUrlDir()}" class="folder parent">
+                <a href="{getUrlParamsParentDir()}" class="folder parent">
                     <span class="wrapper-value icon"><span class="inner-wrapper-value"><i class="fas fa-level-up-alt"></i></span></span>
                 </a>
             </div>
@@ -38,8 +38,8 @@
 
         {foreach $dirs as $dir}
 
-            <div class="row folder">
-                <a href="{getParamsUrlDir($dir)}" class="folder">
+            <div class="row folder" data-folder='{getDataFolder($dir)|noescape}'>
+                <a href="{getDirUrl($dir)}" class="folder">
                     <span class="wrapper-value icon"><span class="inner-wrapper-value"><i class="far fa-folder"></i></span></span>
                     <span class="wrapper-value filename">
                         <span class="inner-wrapper-value">
@@ -47,6 +47,7 @@
                                 {$dir->getFilename()}
                             </span>
                             <span class="action">
+                                <span class="choose choose-folder">{getMessage('choose folder')}</span>
                                 <i class="far fa-edit edit"></i>
                                 <i class="far fa-trash-alt remove"></i>
                             </span>
@@ -69,7 +70,7 @@
                             {getFilename($file)|noescape}
                         </span>
                         <span class="action">
-                            <a href="" class="choose-file">{getMessage('choose file')}</a>
+                            <span class="choose choose-file">{getMessage('choose file')}</span>
                             <i class="far fa-edit edit"></i>
                             <i class="far fa-trash-alt remove"></i>
                         </span>

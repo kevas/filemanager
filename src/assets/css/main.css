@@ -18,7 +18,7 @@ body {
   margin: 0;
 }
 a {
-  color: #006aeb;
+  color: #222;
   -webkit-transition: all 0.2s ease;
   -moz-transition: all 0.2s ease;
   -ms-transition: all 0.2s ease;
@@ -28,11 +28,11 @@ a {
 a:hover,
 a:focus,
 a:active {
-  color: #909eb5;
+  color: #006aeb;
 }
 .container-filemanager {
   font-family: 'Roboto Condensed', sans-serif;
-  color: #333;
+  color: #222;
 }
 .container-filemanager .btn,
 .container-filemanager input {
@@ -154,7 +154,7 @@ a:active {
   width: 100%;
   align-items: stretch;
   text-decoration: none;
-  color: #006aeb;
+  color: #222;
   -webkit-transition: all 0.2s ease;
   -moz-transition: all 0.2s ease;
   -ms-transition: all 0.2s ease;
@@ -193,10 +193,15 @@ a:active {
 .filemanager .row.folder .wrapper-value .inner-wrapper-value .action i,
 .filemanager .row.file .wrapper-value .inner-wrapper-value .action i {
   font-size: 15px;
-  margin-left: 0px;
+  margin-left: 0;
   cursor: pointer;
-  color: #333;
   padding: 5px;
+  color: #222;
+  -webkit-transition: all 0.2s ease;
+  -moz-transition: all 0.2s ease;
+  -ms-transition: all 0.2s ease;
+  -o-transition: all 0.2s ease;
+  transition: all 0.2s ease;
 }
 .filemanager .row.folder .wrapper-value.icon .inner-wrapper-value .action i:hover,
 .filemanager .row.file .wrapper-value.icon .inner-wrapper-value .action i:hover,
@@ -212,19 +217,43 @@ a:active {
 .filemanager .row.file .wrapper-value .inner-wrapper-value .action i:active {
   color: #006aeb;
 }
-.filemanager .row.folder .wrapper-value.icon .inner-wrapper-value .action .choose-file,
-.filemanager .row.file .wrapper-value.icon .inner-wrapper-value .action .choose-file,
-.filemanager .row.folder .wrapper-value .inner-wrapper-value .action .choose-file,
-.filemanager .row.file .wrapper-value .inner-wrapper-value .action .choose-file {
+.filemanager .row.folder .wrapper-value.icon .inner-wrapper-value .action .choose,
+.filemanager .row.file .wrapper-value.icon .inner-wrapper-value .action .choose,
+.filemanager .row.folder .wrapper-value .inner-wrapper-value .action .choose,
+.filemanager .row.file .wrapper-value .inner-wrapper-value .action .choose {
   margin-right: 12px;
   display: none;
+  color: #222;
+  -webkit-transition: all 0.2s ease;
+  -moz-transition: all 0.2s ease;
+  -ms-transition: all 0.2s ease;
+  -o-transition: all 0.2s ease;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+.filemanager .row.folder .wrapper-value.icon .inner-wrapper-value .action .choose:hover,
+.filemanager .row.file .wrapper-value.icon .inner-wrapper-value .action .choose:hover,
+.filemanager .row.folder .wrapper-value .inner-wrapper-value .action .choose:hover,
+.filemanager .row.file .wrapper-value .inner-wrapper-value .action .choose:hover,
+.filemanager .row.folder .wrapper-value.icon .inner-wrapper-value .action .choose:focus,
+.filemanager .row.file .wrapper-value.icon .inner-wrapper-value .action .choose:focus,
+.filemanager .row.folder .wrapper-value .inner-wrapper-value .action .choose:focus,
+.filemanager .row.file .wrapper-value .inner-wrapper-value .action .choose:focus,
+.filemanager .row.folder .wrapper-value.icon .inner-wrapper-value .action .choose:active,
+.filemanager .row.file .wrapper-value.icon .inner-wrapper-value .action .choose:active,
+.filemanager .row.folder .wrapper-value .inner-wrapper-value .action .choose:active,
+.filemanager .row.file .wrapper-value .inner-wrapper-value .action .choose:active {
+  color: #006aeb;
 }
 .filemanager .row:hover,
 .filemanager .row:focus,
 .filemanager .row:active {
-  background-color: #f6f6f6;
+  background-color: #f8f8f8;
 }
 .filemanager.insertFile .choose-file {
+  display: inline-block !important;
+}
+.filemanager.insertFolder .choose-folder {
   display: inline-block !important;
 }
 .dropzone {
@@ -266,7 +295,7 @@ a:active {
 .dropzone .fa-times:hover,
 .dropzone .fa-times:focus,
 .dropzone .fa-times:active {
-  color: #006aeb;
+  color: #222;
 }
 .action-box {
   position: fixed;
@@ -307,7 +336,7 @@ a:active {
   top: 15px;
   font-size: 20px;
   cursor: pointer;
-  color: #000;
+  color: #222;
   -webkit-transition: all 0.2s ease;
   -moz-transition: all 0.2s ease;
   -ms-transition: all 0.2s ease;
@@ -357,7 +386,7 @@ a:active {
 .btn:hover,
 .btn:focus,
 .btn:active {
-  background-color: #17559f;
+  background-color: #00469f;
 }
 .overlay {
   position: fixed;
