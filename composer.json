@@ -21,6 +21,5 @@
         "psr-4": {
             "Kevas\\Filemanager\\": "src"
         }
-    },
-    "minimum-stability": "dev"
+    }
 }
