@@ -139,7 +139,7 @@ class Filemanager {
         $this->addLatteFunction($pathRequest, $request, $breadCrumbs);
 
         $dirs = Finder::findDirectories('*')->in($searchInDir)->exclude($this->getNameThumbDir());
-        $files = Finder::findFiles('*')->in($searchInDir);
+        $files = Finder::findFiles('*')->exclude('.*')->in($searchInDir);
 
         return $this->latte->renderToString($this->getTemplateDir() . '/index.latte', [
             'dirs' => $dirs,
