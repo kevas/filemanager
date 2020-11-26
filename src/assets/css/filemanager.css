@@ -3,32 +3,19 @@
   font-style: normal;
   font-weight: 400;
   font-display: swap;
-  src: local('Roboto Condensed'), local('RobotoCondensed-Regular'), url(https://fonts.gstatic.com/s/robotocondensed/v19/ieVl2ZhZI2eCN5jzbjEETS9weq8-59U.ttf) format('truetype');
+  src: url(https://fonts.gstatic.com/s/robotocondensed/v19/ieVl2ZhZI2eCN5jzbjEETS9weq8-59U.ttf) format('truetype');
 }
 @font-face {
   font-family: 'Roboto Condensed';
   font-style: normal;
   font-weight: 700;
   font-display: swap;
-  src: local('Roboto Condensed Bold'), local('RobotoCondensed-Bold'), url(https://fonts.gstatic.com/s/robotocondensed/v19/ieVi2ZhZI2eCN5jzbjEETS9weq8-32meKCM.ttf) format('truetype');
+  src: url(https://fonts.gstatic.com/s/robotocondensed/v19/ieVi2ZhZI2eCN5jzbjEETS9weq8-32meKCM.ttf) format('truetype');
 }
 body {
   background-color: #F7F7F7;
   padding: 0;
   margin: 0;
-}
-a {
-  color: #222;
-  -webkit-transition: all 0.2s ease;
-  -moz-transition: all 0.2s ease;
-  -ms-transition: all 0.2s ease;
-  -o-transition: all 0.2s ease;
-  transition: all 0.2s ease;
-}
-a:hover,
-a:focus,
-a:active {
-  color: #006aeb;
 }
 .container-filemanager {
   font-family: 'Roboto Condensed', sans-serif;
@@ -38,16 +25,55 @@ a:active {
 .container-filemanager input {
   font-family: 'Roboto Condensed', sans-serif;
 }
+.container-filemanager a {
+  color: #222;
+  -webkit-transition: all 0.2s ease;
+  -moz-transition: all 0.2s ease;
+  -ms-transition: all 0.2s ease;
+  -o-transition: all 0.2s ease;
+  transition: all 0.2s ease;
+}
+.container-filemanager a:hover,
+.container-filemanager a:focus,
+.container-filemanager a:active {
+  color: #006aeb;
+}
+.container-filemanager .btn {
+  display: inline-block;
+  background-color: #006aeb;
+  color: #fff;
+  padding: 0.5rem 1.4rem;
+  user-select: none;
+  cursor: pointer;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  border-radius: 0.25rem;
+  border: none;
+  text-transform: uppercase;
+  margin-left: 5px;
+  -webkit-transition: all 0.2s ease;
+  -moz-transition: all 0.2s ease;
+  -ms-transition: all 0.2s ease;
+  -o-transition: all 0.2s ease;
+  transition: all 0.2s ease;
+}
+.container-filemanager .btn:hover,
+.container-filemanager .btn:focus,
+.container-filemanager .btn:active {
+  background-color: #00469f;
+}
 .top-bar {
   position: fixed;
-  display: flex;
   left: 0;
   top: 0;
   background-color: #fff;
-  padding: 10px 20px;
   z-index: 1000;
-  width: calc(100% - 40px);
+  width: 100%;
   box-shadow: 0 4px 5px 0 rgba(0, 0, 0, 0.14), 0 1px 10px 0 rgba(0, 0, 0, 0.12), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
+}
+.top-bar .top-bar-inner {
+  padding: 10px 20px;
+  display: flex;
 }
 .top-bar .logo {
   font-weight: bold;
@@ -366,30 +392,6 @@ a:active {
 .empty-content .empty-content-inner .btn {
   padding: 0.8rem 1.8rem;
   margin-right: 10px;
-}
-.btn {
-  display: inline-block;
-  background-color: #006aeb;
-  color: #fff;
-  padding: 0.5rem 1.4rem;
-  user-select: none;
-  cursor: pointer;
-  font-size: 0.9rem;
-  line-height: 1.5;
-  border-radius: 0.25rem;
-  border: none;
-  text-transform: uppercase;
-  margin-left: 5px;
-  -webkit-transition: all 0.2s ease;
-  -moz-transition: all 0.2s ease;
-  -ms-transition: all 0.2s ease;
-  -o-transition: all 0.2s ease;
-  transition: all 0.2s ease;
-}
-.btn:hover,
-.btn:focus,
-.btn:active {
-  background-color: #00469f;
 }
 .overlay {
   position: fixed;

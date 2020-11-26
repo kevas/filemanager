@@ -1,22 +1,24 @@
 <div class="container-filemanager">
 
     <div class="top-bar">
+        <div class="top-bar-inner">
 
-        <div class="logo">{getMessage('File Manager')}</div>
+            <div class="logo">{getMessage('File Manager')}</div>
 
-        <div class="breadcrumbs">
-            <a href="{$homeBreadCrumbParams}"><i class="fas fa-home"></i></a>
-            {if count($breadCrumbs) > 0}
-                <span class="sep">/</span>
-                {foreach $breadCrumbs as $breadCrumb}
-                    {getBreadCrumbItem($breadCrumb)|noescape}
-                    {!$iterator->isLast() ? '<span class="sep">/</span>' : ''|noescape}
-                {/foreach}
-            {/if}
+            <div class="breadcrumbs">
+                <a href="{$homeBreadCrumbParams}"><i class="fas fa-home"></i></a>
+                {if count($breadCrumbs) > 0}
+                    <span class="sep">/</span>
+                    {foreach $breadCrumbs as $breadCrumb}
+                        {getBreadCrumbItem($breadCrumb)|noescape}
+                        {!$iterator->isLast() ? '<span class="sep">/</span>' : ''|noescape}
+                    {/foreach}
+                {/if}
+            </div>
+
+            <div class="upload"><i class="fas fa-upload"></i>{getMessage('Upload files')}</div>
+            <div class="new-folder"><i class="far fa-folder-open"></i>{getMessage('New folder')}</div>
         </div>
-
-        <div class="upload"><i class="fas fa-upload"></i>{getMessage('Upload files')}</div>
-        <div class="new-folder"><i class="far fa-folder-open"></i>{getMessage('New folder')}</div>
     </div>
 
     <div class="filemanager{$isInsertFileParam ? ' insertFile' : ''}{$isInsertFolderParam ? ' insertFolder' : ''}" data-path="{getPathUrl()}">

@@ -11,19 +11,27 @@
 .transition(@transition) { -webkit-transition: @transition; -moz-transition: @transition; -ms-transition: @transition; -o-transition: @transition; transition: @transition; }
 
 body { background-color: #F7F7F7; padding: 0; margin: 0 }
-a { color: @color-link; .transition(all 0.2s ease);
-    &:hover,
-    &:focus,
-    &:active { color: @color-link-active; }
-}
 
 .container-filemanager { font-family: 'Roboto Condensed', sans-serif; color: @color-main;
     .btn, input { font-family: 'Roboto Condensed', sans-serif; }
+    a { color: @color-link; .transition(all 0.2s ease);
+        &:hover,
+        &:focus,
+        &:active { color: @color-link-active; }
+    }
+    .btn { display: inline-block; background-color: @color-btn; color: #fff; padding: .5rem 1.4rem; user-select: none; cursor: pointer;
+        font-size: .9rem; line-height: 1.5; border-radius: .25rem; border: none; text-transform: uppercase; margin-left: 5px;
+        .transition(all 0.2s ease);
+        &:hover,
+        &:focus,
+        &:active { background-color: @color-btn-active; }
+    }
 }
 
-.top-bar { position: fixed; display: flex; left: 0; top: 0; background-color: #fff; padding: 10px 20px; z-index: 1000;
-    width: ~"calc(100% - 40px)";
-    box-shadow: 0 4px 5px 0 rgba(0, 0, 0, .14), 0 1px 10px 0 rgba(0, 0, 0, .12), 0 2px 4px -1px rgba(0, 0, 0, .2);
+.top-bar { position: fixed; left: 0; top: 0; background-color: #fff; z-index: 1000;
+    width: 100%; box-shadow: 0 4px 5px 0 rgba(0, 0, 0, .14), 0 1px 10px 0 rgba(0, 0, 0, .12), 0 2px 4px -1px rgba(0, 0, 0, .2);
+
+    .top-bar-inner { padding: 10px 20px; display: flex; }
 
     .logo { font-weight: bold; font-size: 24px;  }
     .breadcrumbs { flex-grow: 1; margin: 6px 0 0 20px;
@@ -133,14 +141,6 @@ a { color: @color-link; .transition(all 0.2s ease);
         i { margin-right: 4px }
         .btn { padding: .8rem 1.8rem; margin-right: 10px }
     }
-}
-
-.btn { display: inline-block; background-color: @color-btn; color: #fff; padding: .5rem 1.4rem; user-select: none; cursor: pointer;
-    font-size: .9rem; line-height: 1.5; border-radius: .25rem; border: none; text-transform: uppercase; margin-left: 5px;
-    .transition(all 0.2s ease);
-    &:hover,
-    &:focus,
-    &:active { background-color: @color-btn-active; }
 }
 
 .overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 1000;

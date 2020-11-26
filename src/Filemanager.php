@@ -105,6 +105,7 @@ class Filemanager {
 
         $selectedFileRequest = $request->get('selectedFile', '');
         $idFileRequest = $request->get('idFile', '');
+        $CKEditorFuncNum = $request->get('CKEditorFuncNum', '');
 
         $selectedFolderRequest = $request->get('selectedFolder', '');
         $idFolderRequest = $request->get('idFolder', '');
@@ -145,7 +146,7 @@ class Filemanager {
             'files' => $files,
             'breadCrumbs' => $breadCrumbs,
             'homeBreadCrumbParams' => '?path=' .  $this->getAllUrlParamsExceptPathParam($request),
-            'isInsertFileParam' => (!empty($idFileRequest)),
+            'isInsertFileParam' => (!empty($idFileRequest) || !empty($CKEditorFuncNum)),
             'isInsertFolderParam' => (!empty($idFolderRequest)),
             'searchInDir' => $searchInDir,
         ]);
