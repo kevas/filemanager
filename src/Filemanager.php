@@ -449,7 +449,7 @@ class Filemanager {
      * @return string
      */
     protected function removeMultipleSlashes(string $filename): string {
-        return preg_replace('#/+#', '/', '/' . $filename);
+        return preg_replace('#/+#', '/', $filename);
     }
 
     /**
