@@ -267,8 +267,9 @@ class Filemanager {
     protected function getClassNameActiveRow(SplFileInfo $file, Request $request, string $nameParam): string {
         $selectedFileParam = $request->get($nameParam, '');
         $selectedFile = $this->removeMultipleSlashes($this->documentRootDir . '/' . trim($selectedFileParam, '/'));
+        $realPath = $this->changeBackSlashes($file->getRealPath());
 
-        return (!empty($selectedFileParam) && $selectedFile == $file->getRealPath() ? 'active' : '');
+        return (!empty($selectedFileParam) && $selectedFile == $realPath ? 'active' : '');
     }
 
     /**
@@ -276,12 +277,22 @@ class Filemanager {
      * @return string
      */
     protected function getDataFile(SplFileInfo $file): string {
+        $realPath = $this->changeBackSlashes($file->getRealPath());
+
         return json_encode([
             'filename' => $file->getFilename(),
-            'absoluteFilename' => $file->getRealPath(),
-            'pathFilename' => str_replace($this->documentRootDir, '', $file->getRealPath()),
+            'absoluteFilename' => $realPath,
+            'pathFilename' => str_replace($this->documentRootDir, '', $realPath),
             'extension' => $file->getExtension()
         ]);
+    }
+
+    /**
+     * @param string $path
+     * @return string
+     */
+    protected function changeBackSlashes(string $path): string {
+        return str_replace('\\', '/', $path);
     }
 
     /**
@@ -289,8 +300,10 @@ class Filemanager {
      * @return string
      */
     protected function getDataDir(SplFileInfo $folder): string {
+        $realPath = $this->changeBackSlashes($folder->getRealPath());
+
         return json_encode([
-            'path' => str_replace($this->documentRootDir, '', $folder->getRealPath())
+            'path' => str_replace($this->documentRootDir, '', $realPath)
         ]);
     }
 
