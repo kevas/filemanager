@@ -95,7 +95,7 @@ class Filemanager {
      * @return string
      * @throws FilemanagerException
      */
-    public function render() {
+    public function render(): string {
         $this->init();
         $this->createThumbDir();
 
@@ -277,7 +277,7 @@ class Filemanager {
      * @return string
      */
     protected function getDataFile(SplFileInfo $file): string {
-        $realPath = $this->changeBackSlashes($file->getRealPath());
+        $realPath = '/' . $this->changeBackSlashes($file->getRealPath());
 
         return json_encode([
             'filename' => $file->getFilename(),
@@ -342,8 +342,9 @@ class Filemanager {
      * @return string
      */
     protected function getFilename(SplFileInfo $file): string {
+        $realPath = $this->changeBackSlashes($file->getRealPath());
 
-        $link = str_replace($this->documentRootDir, '', $file->getPathname());
+        $link = '/' . str_replace($this->documentRootDir, '', $realPath);
 
         if($this->isFileImage($file)) {
             $filename = Html::el('a')->addAttributes([
@@ -429,8 +430,7 @@ class Filemanager {
      * @throws ImageException
      * @throws UnknownImageFileException
      */
-    protected function getImageThumb(SplFileInfo $file) {
-
+    protected function getImageThumb(SplFileInfo $file): Html {
         $width = 45;
         $height = 45;
 
