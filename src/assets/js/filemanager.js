@@ -148,13 +148,13 @@ filemanager.main = (function(scope) {
 
     scope.insert = function () {
 
-        $('.filemanager.insertFile .row.file .choose-file').on('click',function(e) {
+        $('.filemanager.insert-file .row.file .choose-file').on('click',function(e) {
             e.preventDefault();
             let dataFile = JSON.parse($(this).parents('.row').attr('data-file'));
             $(document).trigger('filemanagerInsertFile', [$(this), dataFile]);
         });
 
-        $('.filemanager.insertFolder .row.folder .choose-folder').on('click',function(e) {
+        $('.filemanager.insert-folder .row.folder .choose-folder').on('click',function(e) {
             e.preventDefault();
             let dataFolder = JSON.parse($(this).parents('.row').attr('data-folder'));
             $(document).trigger('filemanagerInsertFolder', [$(this), dataFolder]);

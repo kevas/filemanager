@@ -1,6 +1,6 @@
 {
     "name": "kevas/filemanager",
-    "description": "Filemanager for web application",
+    "description": "Filemanager for web application build on Nette framework",
     "keywords": ["filemanager", "web"],
     "license": ["BSD-3-Clause", "GPL-2.0-only", "GPL-3.0-only"],
     "authors": [
@@ -10,11 +10,10 @@
         }
     ],
     "require": {
-        "php": ">= 7.1",
+        "php": ">= 7.4",
         "nette/finder": "^2.5",
         "nette/utils": "^3.0",
         "latte/latte": "^2.5",
-        "symfony/http-foundation": "^4.4",
         "ext-json": "*"
     },
     "autoload": {

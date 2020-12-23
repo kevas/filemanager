@@ -279,10 +279,10 @@ body {
 .filemanager .row.active {
   background-color: #fafbff;
 }
-.filemanager.insertFile .choose-file {
+.filemanager.insert-file .choose-file {
   display: inline-block !important;
 }
-.filemanager.insertFolder .choose-folder {
+.filemanager.insert-folder .choose-folder {
   display: inline-block !important;
 }
 .dropzone {

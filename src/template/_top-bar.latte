@@ -1,0 +1,25 @@
+<div class="top-bar">
+    <div class="top-bar-inner">
+
+        <div class="logo">{getMessage('File Manager')}</div>
+
+        <div class="breadcrumbs">
+                <a n:href="breadCrumb!, 'i' => 0"><i class="fas fa-home"></i></a>
+                {if count($paths) > 0}
+                    <span class="sep">/</span>
+                    {foreach $paths as $path}
+
+                        {if $iterator->isLast()}
+                            <span>{$path}</span>
+                        {else}
+                            <a n:href="breadCrumb!, 'i' => $iterator->counter">{$path}</a><span class="sep">/</span>
+                        {/if}
+
+                    {/foreach}
+                {/if}
+        </div>
+
+        <div class="upload"><i class="fas fa-upload"></i>{getMessage('Upload files')}</div>
+        <div class="new-folder"><i class="far fa-folder-open"></i>{getMessage('New folder')}</div>
+    </div>
+</div>

@@ -1,27 +1,8 @@
 <div class="container-filemanager">
 
-    <div class="top-bar">
-        <div class="top-bar-inner">
+    {include '_top-bar.latte'}
 
-            <div class="logo">{getMessage('File Manager')}</div>
-
-            <div class="breadcrumbs">
-                <a href="{$homeBreadCrumbParams}"><i class="fas fa-home"></i></a>
-                {if count($breadCrumbs) > 0}
-                    <span class="sep">/</span>
-                    {foreach $breadCrumbs as $breadCrumb}
-                        {getBreadCrumbItem($breadCrumb)|noescape}
-                        {!$iterator->isLast() ? '<span class="sep">/</span>' : ''|noescape}
-                    {/foreach}
-                {/if}
-            </div>
-
-            <div class="upload"><i class="fas fa-upload"></i>{getMessage('Upload files')}</div>
-            <div class="new-folder"><i class="far fa-folder-open"></i>{getMessage('New folder')}</div>
-        </div>
-    </div>
-
-    <div class="filemanager{$isInsertFileParam ? ' insertFile' : ''}{$isInsertFolderParam ? ' insertFolder' : ''}" data-path="{getPathUrl()}">
+    <div class="filemanager{$canInsertFile ? ' insert-file' : ''}{$canInsertDir ? ' insert-folder' : ''}" data-path="{link remove!}">
 
         <div class="row header">
             <span class="wrapper-value icon"><span class="inner-wrapper-value"></span></span>
@@ -30,9 +11,9 @@
             <span class="wrapper-value time"><span class="inner-wrapper-value">{getMessage('Modified')}</span></span>
         </div>
 
-        {if displayParentDir()}
+        {if canDisplayParentDir()}
             <div class="row">
-                <a href="{getUrlParamsParentDir()}" class="folder parent">
+                <a n:href="parentDir!" class="folder parent">
                     <span class="wrapper-value icon"><span class="inner-wrapper-value"><i class="fas fa-level-up-alt"></i></span></span>
                 </a>
             </div>
@@ -40,8 +21,8 @@
 
         {foreach $dirs as $dir}
 
-            <div class="row folder {getClassNameActiveRow($dir, 'selectedFolder')}" data-folder='{getDataDir($dir)|noescape}'>
-                <a href="{getDirUrl($dir)}" class="folder">
+            <div class="row folder {getClassNameActiveRow($dir, 'selectedDir')}" data-folder='{getDataDir($dir)|noescape}'>
+                <a n:href="childDir!, 'dirName' => $dir->getFilename()" class="folder">
                     <span class="wrapper-value icon"><span class="inner-wrapper-value"><i class="far fa-folder"></i></span></span>
                     <span class="wrapper-value filename">
                         <span class="inner-wrapper-value">
@@ -69,7 +50,7 @@
                 <span class="wrapper-value filename">
                     <span class="inner-wrapper-value">
                         <span class="name" data-name="{$file->getBasename('.' . $file->getExtension())}" data-ext="{$file->getExtension()}">
-                            {getFilename($file)|noescape}
+                            {getLink($file)|noescape}
                         </span>
                         <span class="action">
                             <span class="choose choose-file">{getMessage('choose file')}</span>
@@ -97,7 +78,7 @@
 
     <div class="overlay"></div>
 
-    <form action="{getDropzoneUrl()}" class="dropzone" id="dropzoneBox">
+    <form action="{link dropzone!}" class="dropzone" id="dropzoneBox">
         <i class="fas fa-times"></i>
         <div class="dz-message needsclick">
             <button type="button" class="dz-button">{getMessage('Drop files here or click to upload.')}</button>
@@ -105,7 +86,7 @@
     </form>
 
     <div class="new-folder-box action-box">
-        <form action="{getPathUrl()}" method="post">
+        <form action="{link createDir!}" method="post">
             <i class="fas fa-times"></i>
             <input type="text" name="folderName" class="form-control" placeholder="{getMessage('Name of folder')}">
             <input type="submit" value="{getMessage('Create')}" class="btn">
@@ -113,7 +94,7 @@
     </div>
 
     <div class="edit-box action-box">
-        <form action="{getPathUrl()}" method="post">
+        <form action="{link editDir!}" method="post">
             <i class="fas fa-times"></i>
             <input type="text" name="editName" class="form-control">
             <input type="hidden" name="oldEditName">

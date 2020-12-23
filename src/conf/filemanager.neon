@@ -1,0 +1,5 @@
+
+services:
+    filemanager.filemanagerControlFactory: Kevas\Filemanager\Component\IFilemanagerControlFactory
+    filemanager.basePath: Kevas\Filemanager\BasePath(%appDir%, %wwwDir%, %tempDir%, %vendorDir%)
+
