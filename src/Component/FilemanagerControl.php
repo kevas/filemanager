@@ -308,10 +308,6 @@ class FilemanagerControl extends Control {
             return $this->getLink($file);
         });
 
-        $latte->addFunction('getHumanFileSize', function (SplFileInfo $file) {
-            return $this->getHumanFileSize($file->getSize());
-        });
-
     }
 
     /**
@@ -454,22 +450,6 @@ class FilemanagerControl extends Control {
     }
 
     /**
-     * @param $size
-     * @param string $unit
-     * @return string
-     */
-    private function getHumanFileSize($size, $unit=''): string {
-        if( (!$unit && $size >= 1<<30) || $unit == "GB")
-            return number_format($size/(1<<30),2)." GB";
-        if( (!$unit && $size >= 1<<20) || $unit == "MB")
-            return number_format($size/(1<<20),2)." MB";
-        if( (!$unit && $size >= 1<<10) || $unit == "KB")
-            return number_format($size/(1<<10),2)." KB";
-
-        return number_format($size)." bytes";
-    }
-
-    /**
      * @return string
      */
     private function getSearchInDir(): string {
@@ -491,6 +471,8 @@ class FilemanagerControl extends Control {
 
         foreach ($nameParams as $nameParam) {
             $query = $this->request->getQuery($nameParam);
+
+            unset($this->sessionSection[$nameParam]);
 
             if(!empty($query)) {
                 $this->sessionSection[$nameParam] = $query;

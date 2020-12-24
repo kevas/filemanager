@@ -59,7 +59,7 @@
                         </span>
                     </span>
                 </span>
-                <span class="wrapper-value size"><span class="inner-wrapper-value">{getHumanFileSize($file)}</span></span>
+                <span class="wrapper-value size"><span class="inner-wrapper-value">{$file->getSize()|bytes}</span></span>
                 <span class="wrapper-value time"><span class="inner-wrapper-value">{date('d.m.Y H:i', $file->getMTime())}</span></span>
             </div>
 
