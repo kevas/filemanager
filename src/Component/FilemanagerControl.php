@@ -252,7 +252,7 @@ class FilemanagerControl extends Control {
             'dirs' => $dirs,
             'files' => $files,
             'canInsertFile' => (!empty($this->idFile) || !empty($this->CKEditorFuncNum)),
-            'canInsertDir' => (!empty($this->selectedDir)),
+            'canInsertDir' => (!empty($this->idFolder)),
             'paths' => array_filter(explode('/', $this->path)),
         ]);
     }
