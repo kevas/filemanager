@@ -464,7 +464,7 @@ class FilemanagerControl extends Control {
         foreach ($this->persistentParameters as $nameParam) {
             $query = $this->request->getQuery($nameParam);
 
-            if(!empty($query)) {
+            if(!is_null($query)) {
                 $this->sessionSection[$nameParam] = $query;
             }
         }
