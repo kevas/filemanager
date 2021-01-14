@@ -412,6 +412,8 @@ class FilemanagerControl extends Control {
         $thumbFilename =  md5($file->getFilename() . $file->getPath() . $width . $height . $ext) . '.' . $ext;
         $thumbImage = $this->removeMultipleSlashes($this->getSearchInDir() . '/' . $thumbDir . $thumbFilename);
 
+        FileSystem::createDir($this->getSearchInDir() . '/' . $thumbDir);
+
         if(!file_exists($thumbImage)) {
             $srcImage = $this->removeMultipleSlashes($file->getPath() . '/' . $file->getFilename());
 
