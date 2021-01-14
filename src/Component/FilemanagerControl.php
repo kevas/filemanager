@@ -466,6 +466,7 @@ class FilemanagerControl extends Control {
 
             if(!is_null($query)) {
                 $this->sessionSection[$nameParam] = $query;
+                $this->$nameParam = $query;
             }
         }
     }
