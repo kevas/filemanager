@@ -29,10 +29,10 @@ class FilemanagerControl extends Control {
     public ?string $idFile = null;
 
     /** @persistent */
-    public ?string $selectedDir = null;
+    public ?string $selectedFolder = null;
 
     /** @persistent */
-    public ?string $idDir = null;
+    public ?string $idFolder = null;
 
     /** @persistent */
     public ?string $CKEditorFuncNum = null;
@@ -51,6 +51,8 @@ class FilemanagerControl extends Control {
 
     private string $thumbDir = '__thumb__';
 
+    private array $persistentParameters = ['selectedFile', 'idFile', 'selectedFolder', 'idFolder', 'CKEditorFuncNum'];
+
     /**
      * FilemanagerControl constructor.
      * @param BasePath $basePath
@@ -63,23 +65,6 @@ class FilemanagerControl extends Control {
         $this->monitor(Nette\Application\UI\Presenter::class, function () {
             $this->onLoadPresenter();
         });
-    }
-
-    /**
-     * @param array $params
-     */
-    public function saveState(array &$params): void {
-        parent::saveState($params);
-
-        $nameParams = ['selectedFile', 'idFile', 'selectedFolder', 'idFolder', 'CKEditorFuncNum'];
-
-        foreach ($nameParams as $nameParam) {
-
-            if(isset($this->sessionSection[$nameParam])) {
-                $params[$nameParam] = $this->sessionSection[$nameParam];
-                unset($this->sessionSection[$nameParam]);
-            }
-        }
     }
 
     /**
@@ -106,6 +91,8 @@ class FilemanagerControl extends Control {
      * @throws Nette\Application\AbortException
      */
     public function handleChildDir(string $dirName) {
+        $this->setupPersistentParameters();
+
         $this->path = (!empty($this->path) ? $this->path . '/' : '') . $dirName;
         $this->redirect('this');
     }
@@ -115,6 +102,8 @@ class FilemanagerControl extends Control {
      * @throws Nette\Application\AbortException
      */
     public function handleParentDir() {
+        $this->setupPersistentParameters();
+
         $path = $this->path;
         $pathArr = array_filter(explode('/', $path));
         $countPath = count($pathArr);
@@ -137,6 +126,8 @@ class FilemanagerControl extends Control {
      * @throws Nette\Application\AbortException
      */
     public function handleBreadCrumb(int $i) {
+        $this->setupPersistentParameters();
+
         if($i == 0) {
             $this->path = null;
             $this->redirect('this');
@@ -232,6 +223,7 @@ class FilemanagerControl extends Control {
      * @throws Nette\Application\AbortException
      */
     public function handleRemove() {
+        $this->setupPersistentParameters();
         $name = $this->request->getPost('removeName');
 
         if(!empty($name)) {
@@ -469,16 +461,23 @@ class FilemanagerControl extends Control {
     private function onLoadPresenter() {
         $this->request = $this->getPresenter()->getHttpRequest();
 
-        $nameParams = ['selectedFile', 'idFile', 'selectedFolder', 'idFolder', 'CKEditorFuncNum'];
-
-        foreach ($nameParams as $nameParam) {
+        foreach ($this->persistentParameters as $nameParam) {
             $query = $this->request->getQuery($nameParam);
-
-            unset($this->sessionSection[$nameParam]);
 
             if(!empty($query)) {
                 $this->sessionSection[$nameParam] = $query;
-                $this->$nameParam = $query;
+            }
+        }
+    }
+
+    private function setupPersistentParameters() {
+        $this->request = $this->getPresenter()->getHttpRequest();
+
+        foreach ($this->persistentParameters as $nameParam) {
+
+            if(isset($this->sessionSection[$nameParam])) {
+                $this->$nameParam = $this->sessionSection[$nameParam];
+                unset($this->sessionSection[$nameParam]);
             }
         }
     }
