@@ -35,7 +35,7 @@ class FilemanagerControl extends Control {
     public ?string $idFolder = null;
 
     /** @persistent */
-    public ?string $CKEditorFuncNum = null;
+    public ?string $ckeditor = null;
 
     private BasePath $basePath;
 
@@ -63,8 +63,33 @@ class FilemanagerControl extends Control {
         $this->sessionSection = $session->getSection('filemanager');
 
         $this->monitor(Nette\Application\UI\Presenter::class, function () {
-            $this->onLoadPresenter();
+            $this->request = $this->getPresenter()->getHttpRequest();
         });
+    }
+
+    /**
+     * @param array $params
+     * @throws Nette\Application\BadRequestException
+     */
+    public function loadState(array $params): void {
+        $init = $this->request->getQuery('init');
+
+        if(!is_null($init)) {
+            foreach(['selectedFile', 'selectedFolder'] as $nameParam) {
+
+                if(isset($params[$nameParam])) {
+
+                    $dir = pathinfo($params[$nameParam], PATHINFO_DIRNAME);
+
+                    if (!empty($dir)) {
+                        $dir = str_replace($this->uploadDir, '', $dir);
+                        $params['path'] = ltrim($this->removeMultipleSlashes($dir), '/');
+                    }
+                }
+            }
+        }
+
+        parent::loadState($params);
     }
 
     /**
@@ -91,8 +116,6 @@ class FilemanagerControl extends Control {
      * @throws Nette\Application\AbortException
      */
     public function handleChildDir(string $dirName) {
-        $this->setupPersistentParameters();
-
         $this->path = (!empty($this->path) ? $this->path . '/' : '') . $dirName;
         $this->redirect('this');
     }
@@ -102,8 +125,6 @@ class FilemanagerControl extends Control {
      * @throws Nette\Application\AbortException
      */
     public function handleParentDir() {
-        $this->setupPersistentParameters();
-
         $path = $this->path;
         $pathArr = array_filter(explode('/', $path));
         $countPath = count($pathArr);
@@ -126,8 +147,6 @@ class FilemanagerControl extends Control {
      * @throws Nette\Application\AbortException
      */
     public function handleBreadCrumb(int $i) {
-        $this->setupPersistentParameters();
-
         if($i == 0) {
             $this->path = null;
             $this->redirect('this');
@@ -223,7 +242,6 @@ class FilemanagerControl extends Control {
      * @throws Nette\Application\AbortException
      */
     public function handleRemove() {
-        $this->setupPersistentParameters();
         $name = $this->request->getPost('removeName');
 
         if(!empty($name)) {
@@ -251,7 +269,7 @@ class FilemanagerControl extends Control {
         $this->template->render(__DIR__ . '/../template/index.latte', [
             'dirs' => $dirs,
             'files' => $files,
-            'canInsertFile' => (!empty($this->idFile) || !empty($this->CKEditorFuncNum)),
+            'canInsertFile' => (!empty($this->idFile) || !empty($this->ckeditor)),
             'canInsertDir' => (!empty($this->idFolder)),
             'paths' => array_filter(explode('/', $this->path)),
         ]);
@@ -456,31 +474,6 @@ class FilemanagerControl extends Control {
      */
     private function removeMultipleSlashes(string $filename): string {
         return preg_replace('#/+#', '/', $filename);
-    }
-
-    private function onLoadPresenter() {
-        $this->request = $this->getPresenter()->getHttpRequest();
-
-        foreach ($this->persistentParameters as $nameParam) {
-            $query = $this->request->getQuery($nameParam);
-
-            if(!is_null($query)) {
-                $this->sessionSection[$nameParam] = $query;
-                $this->$nameParam = $query;
-            }
-        }
-    }
-
-    private function setupPersistentParameters() {
-        $this->request = $this->getPresenter()->getHttpRequest();
-
-        foreach ($this->persistentParameters as $nameParam) {
-
-            if(isset($this->sessionSection[$nameParam])) {
-                $this->$nameParam = $this->sessionSection[$nameParam];
-                unset($this->sessionSection[$nameParam]);
-            }
-        }
     }
 
 }
