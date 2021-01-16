@@ -259,7 +259,15 @@ class FilemanagerControl extends Control {
     }
 
     public function render(): void {
-        $this->init();
+        $this->addLatteFunction();
+
+        $langMessageFile = __DIR__ . '/../messages/' . $this->lang . '.json';
+
+        if(!file_exists($langMessageFile)) {
+            $langMessageFile = __DIR__ . '/../messages/en.json';
+        }
+
+        $this->messages = json_decode(FileSystem::read($langMessageFile), true);
 
         $searchInDir = $this->getSearchInDir() . '/' . $this->path;
 
@@ -273,18 +281,6 @@ class FilemanagerControl extends Control {
             'canInsertDir' => (!empty($this->idFolder)),
             'paths' => array_filter(explode('/', $this->path)),
         ]);
-    }
-
-    private function init() {
-        $this->addLatteFunction();
-
-        $langMessageFile = __DIR__ . '/../messages/' . $this->lang . '.json';
-
-        if(!file_exists($langMessageFile)) {
-            $langMessageFile = __DIR__ . '/../messages/en.json';
-        }
-
-        $this->messages = json_decode(FileSystem::read($langMessageFile), true);
     }
 
     private function addLatteFunction() {
