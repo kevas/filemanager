@@ -37,6 +37,9 @@ class FilemanagerControl extends Control {
     /** @persistent */
     public ?string $ckeditor = null;
 
+    /** @persistent */
+    public ?string $CKEditorFuncNum = null;
+
     private BasePath $basePath;
 
     private Nette\Http\SessionSection $sessionSection;
@@ -50,8 +53,6 @@ class FilemanagerControl extends Control {
     private array $messages;
 
     private string $thumbDir = '__thumb__';
-
-    private array $persistentParameters = ['selectedFile', 'idFile', 'selectedFolder', 'idFolder', 'CKEditorFuncNum'];
 
     /**
      * FilemanagerControl constructor.
@@ -73,6 +74,11 @@ class FilemanagerControl extends Control {
      */
     public function loadState(array $params): void {
         $init = $this->request->getQuery('init');
+        $initCkeditor = $this->request->getQuery('initCkeditor');
+
+        if(!is_null($initCkeditor)) {
+            $params['CKEditorFuncNum'] = $this->request->getQuery('CKEditorFuncNum');
+        }
 
         if(!is_null($init)) {
             foreach(['selectedFile', 'selectedFolder'] as $nameParam) {
