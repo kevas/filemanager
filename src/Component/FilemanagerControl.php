@@ -52,6 +52,8 @@ class FilemanagerControl extends Control {
 
     private array $messages;
 
+    private ?string $initPath;
+
     private string $thumbDir = '__thumb__';
 
     /**
@@ -77,10 +79,13 @@ class FilemanagerControl extends Control {
         $initCkeditor = $this->request->getQuery('initCkeditor');
 
         if(!is_null($initCkeditor)) {
+            $params['path'] = $this->initPath;
             $params['CKEditorFuncNum'] = $this->request->getQuery('CKEditorFuncNum');
         }
 
         if(!is_null($init)) {
+            $params['path'] = $this->initPath;
+
             foreach(['selectedFile', 'selectedFolder'] as $nameParam) {
 
                 if(isset($params[$nameParam])) {
@@ -113,6 +118,15 @@ class FilemanagerControl extends Control {
      */
     public function setLang(string $lang): FilemanagerControl {
         $this->lang = $lang;
+        return $this;
+    }
+
+    /**
+     * @param string|null $initPath
+     * @return FilemanagerControl
+     */
+    public function setInitPath(?string $initPath): FilemanagerControl {
+        $this->initPath = $initPath;
         return $this;
     }
 
