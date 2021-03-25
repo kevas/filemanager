@@ -38,6 +38,9 @@ class FilemanagerControl extends Control {
     public ?string $ckeditor = null;
 
     /** @persistent */
+    public ?string $load = null;
+
+    /** @persistent */
     public ?string $CKEditorFuncNum = null;
 
     private BasePath $basePath;
@@ -98,6 +101,8 @@ class FilemanagerControl extends Control {
                     }
                 }
             }
+
+            bdump($params);
         }
 
         parent::loadState($params);
