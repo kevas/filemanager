@@ -8,7 +8,15 @@
 @color-btn: @color-link-active;
 @color-btn-active: #00469f;
 
-.transition(@transition) { -webkit-transition: @transition; -moz-transition: @transition; -ms-transition: @transition; -o-transition: @transition; transition: @transition; }
+.transition(@transition) { -webkit-transition: @transition; -moz-transition: @transition;
+    -ms-transition: @transition; -o-transition: @transition; transition: @transition; }
+
+.defaultBtn () {
+    display: inline-block; background-color: @color-btn; color: #fff; padding: .5rem 1.4rem; user-select: none; cursor: pointer;
+    font-size: .9rem; line-height: 1.5; border-radius: .25rem; border: none; text-transform: uppercase; margin-left: 5px;
+    .transition(all 0.2s ease);
+    &:hover, &:focus, &:active { background-color: @color-btn-active; }
+}
 
 body { background-color: #F7F7F7; padding: 0; margin: 0 }
 
@@ -19,13 +27,7 @@ body { background-color: #F7F7F7; padding: 0; margin: 0 }
         &:focus,
         &:active { color: @color-link-active; }
     }
-    .btn { display: inline-block; background-color: @color-btn; color: #fff; padding: .5rem 1.4rem; user-select: none; cursor: pointer;
-        font-size: .9rem; line-height: 1.5; border-radius: .25rem; border: none; text-transform: uppercase; margin-left: 5px;
-        .transition(all 0.2s ease);
-        &:hover,
-        &:focus,
-        &:active { background-color: @color-btn-active; }
-    }
+    .btn { .defaultBtn(); }
 }
 
 .top-bar { position: fixed; left: 0; top: 0; background-color: #fff; z-index: 1000;
@@ -41,9 +43,7 @@ body { background-color: #F7F7F7; padding: 0; margin: 0 }
 
     .upload { margin-right: 25px }
     .upload, .new-folder { margin-top: 5px; cursor: pointer; .transition(all 0.2s ease);
-        &:hover,
-        &:focus,
-        &:active { color: @color-link-active; }
+        &:hover, &:focus, &:active { color: @color-link-active; }
     }
     i { margin-right: 4px }
 }
@@ -53,9 +53,7 @@ body { background-color: #F7F7F7; padding: 0; margin: 0 }
 
         &.header { font-weight: bold; border-bottom: 2px solid #dee2e6;
             .filename .inner-wrapper-value { position: relative; left: -45px; top: 0 }
-            &:hover,
-            &:focus,
-            &:active { background-color: transparent; }
+            &:hover, &:focus, &:active { background-color: transparent; }
         }
 
         .wrapper-value, a .wrapper-value { display: flex; justify-content: center; flex-direction: column; width: 25%;
@@ -82,14 +80,10 @@ body { background-color: #F7F7F7; padding: 0; margin: 0 }
                 a { text-decoration: none;  }
                 .action { position: absolute; right: 20px; top: -12px; display: none;
                     i { font-size: 15px; margin-left: 0; cursor: pointer; padding: 5px; color: @color-link; .transition(all 0.2s ease);
-                        &:hover,
-                        &:focus,
-                        &:active { color: @color-link-active }
+                        &:hover, &:focus, &:active { color: @color-link-active }
                     }
-                    .choose { margin-right: 12px; display: none; color: @color-link; .transition(all 0.2s ease); cursor: pointer;
-                        &:hover,
-                        &:focus,
-                        &:active { color: @color-link-active }
+                    .choose { .defaultBtn(); padding: 2px 10px; font-size: 13px; margin-right: 8px; display: none;
+                        &:hover, &:focus, &:active { }
                     }
                 }
             }
@@ -103,8 +97,10 @@ body { background-color: #F7F7F7; padding: 0; margin: 0 }
     }
 }
 
-.filemanager.insert-file .choose-file { display: inline-block !important; }
-.filemanager.insert-folder .choose-folder { display: inline-block !important; }
+.filemanager.insert-file .choose-file,
+.filemanager.insert-folder .choose-folder { display: inline-block !important; cursor: pointer; .transition(all 0.2s ease);
+    &:hover, &:focus, &:active { color: @color-link-active }
+}
 
 .dropzone { position: fixed; top: 150px; left: 150px; right: 150px; bottom: 150px; z-index: 1010; display: none;
     border: 2px dashed #0087F7; border-radius: 5px; background-color: #fff;
@@ -112,9 +108,7 @@ body { background-color: #F7F7F7; padding: 0; margin: 0 }
         .dz-button { font-size: 20px; color: #646C7F }
     }
     .fa-times { position: absolute; right: 0; top: -28px; font-size: 20px; cursor: pointer; color: #000; .transition(all 0.2s ease);
-        &:hover,
-        &:focus,
-        &:active { color: @color-link; }
+        &:hover, &:focus, &:active { color: @color-link; }
     }
 }
 

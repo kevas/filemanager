@@ -478,7 +478,14 @@ class FilemanagerControl extends Control {
             ]);
         }
 
-        return $filename->setText($file->getFilename())->render();
+        $icon = '';
+
+        try {
+            $icon = $this->getFileIcon($file);
+        } catch (UnknownImageFileException | ImageException $e) {
+        }
+
+        return $filename->setHtml($icon)->render();
     }
 
     /**

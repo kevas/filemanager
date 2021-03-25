@@ -26,7 +26,7 @@
                     <span class="wrapper-value icon"><span class="inner-wrapper-value"><i class="far fa-folder"></i></span></span>
                     <span class="wrapper-value filename">
                         <span class="inner-wrapper-value">
-                            <span class="name" data-name="{$dir->getBasename()}">
+                            <span class="name choose-folder" data-name="{$dir->getBasename()}">
                                 {$dir->getFilename()}
                             </span>
                             <span class="action">
@@ -46,11 +46,15 @@
         {foreach $files as $file}
 
             <div class="row file {getClassNameActiveRow($file, 'selectedFile')}" data-file='{getDataFile($file)|noescape}'>
-                <span class="wrapper-value icon"><span class="inner-wrapper-value">{getFileIcon($file)|noescape}</span></span>
+                <span class="wrapper-value icon">
+                    <span class="inner-wrapper-value">
+                        {getLink($file)|noescape}
+                    </span>
+                </span>
                 <span class="wrapper-value filename">
                     <span class="inner-wrapper-value">
-                        <span class="name" data-name="{$file->getBasename('.' . $file->getExtension())}" data-ext="{$file->getExtension()}">
-                            {getLink($file)|noescape}
+                        <span class="name choose-file" data-name="{$file->getBasename('.' . $file->getExtension())}" data-ext="{$file->getExtension()}">
+                            {$file->getFilename()}
                         </span>
                         <span class="action">
                             <span class="choose choose-file">{getMessage('choose file')}</span>

@@ -247,15 +247,27 @@ body {
 .filemanager .row.file .wrapper-value.icon .inner-wrapper-value .action .choose,
 .filemanager .row.folder .wrapper-value .inner-wrapper-value .action .choose,
 .filemanager .row.file .wrapper-value .inner-wrapper-value .action .choose {
-  margin-right: 12px;
-  display: none;
-  color: #222;
+  display: inline-block;
+  background-color: #006aeb;
+  color: #fff;
+  padding: 0.5rem 1.4rem;
+  user-select: none;
+  cursor: pointer;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  border-radius: 0.25rem;
+  border: none;
+  text-transform: uppercase;
+  margin-left: 5px;
   -webkit-transition: all 0.2s ease;
   -moz-transition: all 0.2s ease;
   -ms-transition: all 0.2s ease;
   -o-transition: all 0.2s ease;
   transition: all 0.2s ease;
-  cursor: pointer;
+  padding: 2px 10px;
+  font-size: 13px;
+  margin-right: 8px;
+  display: none;
 }
 .filemanager .row.folder .wrapper-value.icon .inner-wrapper-value .action .choose:hover,
 .filemanager .row.file .wrapper-value.icon .inner-wrapper-value .action .choose:hover,
@@ -269,7 +281,7 @@ body {
 .filemanager .row.file .wrapper-value.icon .inner-wrapper-value .action .choose:active,
 .filemanager .row.folder .wrapper-value .inner-wrapper-value .action .choose:active,
 .filemanager .row.file .wrapper-value .inner-wrapper-value .action .choose:active {
-  color: #006aeb;
+  background-color: #00469f;
 }
 .filemanager .row:hover,
 .filemanager .row:focus,
@@ -279,11 +291,23 @@ body {
 .filemanager .row.active {
   background-color: #fafbff;
 }
-.filemanager.insert-file .choose-file {
-  display: inline-block !important;
-}
+.filemanager.insert-file .choose-file,
 .filemanager.insert-folder .choose-folder {
   display: inline-block !important;
+  cursor: pointer;
+  -webkit-transition: all 0.2s ease;
+  -moz-transition: all 0.2s ease;
+  -ms-transition: all 0.2s ease;
+  -o-transition: all 0.2s ease;
+  transition: all 0.2s ease;
+}
+.filemanager.insert-file .choose-file:hover,
+.filemanager.insert-folder .choose-folder:hover,
+.filemanager.insert-file .choose-file:focus,
+.filemanager.insert-folder .choose-folder:focus,
+.filemanager.insert-file .choose-file:active,
+.filemanager.insert-folder .choose-folder:active {
+  color: #006aeb;
 }
 .dropzone {
   position: fixed;
