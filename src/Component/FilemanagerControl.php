@@ -102,7 +102,6 @@ class FilemanagerControl extends Control {
                 }
             }
 
-            bdump($params);
         }
 
         parent::loadState($params);
@@ -424,7 +423,7 @@ class FilemanagerControl extends Control {
      */
     private function isFileImage(SplFileInfo $file): bool {
         $imageExtensions = ['jpg', 'jpeg', 'png', 'gif', 'bnp'];
-        return (in_array($file->getExtension(), $imageExtensions));
+        return (in_array(strtolower($file->getExtension()), $imageExtensions));
     }
 
     /**
@@ -450,7 +449,7 @@ class FilemanagerControl extends Control {
 
             $image = Image::fromFile($srcImage);
             $image->resize($width, $height, Image::SHRINK_ONLY | Image::STRETCH);
-            $image->save($thumbImage, 80, Image::JPEG);
+            $image->save($thumbImage, 80, Image::PNG);
         }
 
         $wwwThumbImage = str_replace($this->basePath->getWwwDir(), '', $thumbImage);
