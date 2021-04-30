@@ -1,0 +1,21 @@
+<div class="row file {getClassNameActiveRow($file, 'selectedFile')}" data-file='{getDataFile($file)|noescape}'>
+    <span class="wrapper-value icon">
+        <span class="inner-wrapper-value">
+            {getLink($file)|noescape}
+        </span>
+    </span>
+    <span class="wrapper-value filename">
+        <span class="inner-wrapper-value">
+            <span class="name choose-file" data-name="{$file->getBasename('.' . $file->getExtension())}" data-ext="{$file->getExtension()}">
+                {$file->getFilename()}
+            </span>
+            <span class="action">
+                <span class="choose choose-file">{getMessage('choose file')}</span>
+                <i class="far fa-edit edit"></i>
+                <i class="far fa-trash-alt remove"></i>
+            </span>
+        </span>
+    </span>
+    <span class="wrapper-value size"><span class="inner-wrapper-value">{$file->getSize()|bytes}</span></span>
+    <span class="wrapper-value time"><span class="inner-wrapper-value">{date('d.m.Y H:i', $file->getMTime())}</span></span>
+</div>

@@ -4,6 +4,7 @@
 namespace Kevas\Filemanager\Component;
 
 use Kevas\Filemanager\BasePath;
+use Kevas\Filemanager\Configuration;
 use Kevas\Filemanager\Exception\FilemanagerException;
 use Nette\Application\UI\Control;
 use Nette\Http\FileUpload;
@@ -45,8 +46,6 @@ class FilemanagerControl extends Control {
 
     private BasePath $basePath;
 
-    private Nette\Http\SessionSection $sessionSection;
-
     private ?Nette\Http\IRequest $request = null;
 
     private string $uploadDir;
@@ -59,14 +58,16 @@ class FilemanagerControl extends Control {
 
     private string $thumbDir = '__thumb__';
 
+    private Configuration $configuration;
+
     /**
      * FilemanagerControl constructor.
      * @param BasePath $basePath
-     * @param Nette\Http\Session $session
+     * @param Configuration $configuration
      */
-    public function __construct(BasePath $basePath, Nette\Http\Session $session) {
+    public function __construct(BasePath $basePath, Configuration $configuration) {
         $this->basePath = $basePath;
-        $this->sessionSection = $session->getSection('filemanager');
+        $this->configuration = $configuration;
 
         $this->monitor(Nette\Application\UI\Presenter::class, function () {
             $this->request = $this->getPresenter()->getHttpRequest();
@@ -199,9 +200,11 @@ class FilemanagerControl extends Control {
             /** @var FileUpload $file */
             $file = $files['file'];
 
-            $dir = $this->removeMultipleSlashes($this->getSearchInDir() . '/' . $this->path . '/');
+            if(!$file->getError()) {
+                $dir = $this->removeMultipleSlashes($this->getSearchInDir() . '/' . $this->path . '/');
+                $file->move($dir . $file->getName());
+            }
 
-            $file->move($dir . $file->getName());
         }
 
         exit;
@@ -304,6 +307,7 @@ class FilemanagerControl extends Control {
             'canInsertFile' => (!empty($this->idFile) || !empty($this->ckeditor)),
             'canInsertDir' => (!empty($this->idFolder)),
             'paths' => array_filter(explode('/', $this->path)),
+            'conf' => $this->configuration->getConf()
         ]);
     }
 
@@ -460,6 +464,8 @@ class FilemanagerControl extends Control {
     /**
      * @param SplFileInfo $file
      * @return string
+     * @throws ImageException
+     * @throws UnknownImageFileException
      */
     private function getLink(SplFileInfo $file): string {
         $realPath = $this->basePath->changeBackSlashes($file->getRealPath());
@@ -478,12 +484,7 @@ class FilemanagerControl extends Control {
             ]);
         }
 
-        $icon = '';
-
-        try {
-            $icon = $this->getFileIcon($file);
-        } catch (UnknownImageFileException | ImageException $e) {
-        }
+        $icon = $this->getFileIcon($file);
 
         return $filename->setHtml($icon)->render();
     }

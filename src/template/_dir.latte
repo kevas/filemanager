@@ -1,0 +1,19 @@
+<div class="row folder {getClassNameActiveRow($dir, 'selectedFolder')}" data-folder='{getDataDir($dir)|noescape}'>
+    <a n:href="childDir!, 'dirName' => $dir->getFilename()" class="folder">
+        <span class="wrapper-value icon"><span class="inner-wrapper-value"><i class="far fa-folder"></i></span></span>
+        <span class="wrapper-value filename">
+            <span class="inner-wrapper-value">
+                <span class="name choose-folder" data-name="{$dir->getBasename()}">
+                    {$dir->getFilename()}
+                </span>
+                <span class="action">
+                    <span class="choose choose-folder">{getMessage('choose folder')}</span>
+                    <i class="far fa-edit edit"></i>
+                    <i class="far fa-trash-alt remove"></i>
+                </span>
+            </span>
+        </span>
+        <span class="wrapper-value size"><span class="inner-wrapper-value">{getMessage('Folder')}</span></span>
+        <span class="wrapper-value time"><span class="inner-wrapper-value">{date('d.m.Y H:i', $dir->getMTime())}</span></span>
+    </a>
+</div>

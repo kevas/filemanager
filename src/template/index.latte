@@ -21,51 +21,13 @@
 
         {foreach $dirs as $dir}
 
-            <div class="row folder {getClassNameActiveRow($dir, 'selectedFolder')}" data-folder='{getDataDir($dir)|noescape}'>
-                <a n:href="childDir!, 'dirName' => $dir->getFilename()" class="folder">
-                    <span class="wrapper-value icon"><span class="inner-wrapper-value"><i class="far fa-folder"></i></span></span>
-                    <span class="wrapper-value filename">
-                        <span class="inner-wrapper-value">
-                            <span class="name choose-folder" data-name="{$dir->getBasename()}">
-                                {$dir->getFilename()}
-                            </span>
-                            <span class="action">
-                                <span class="choose choose-folder">{getMessage('choose folder')}</span>
-                                <i class="far fa-edit edit"></i>
-                                <i class="far fa-trash-alt remove"></i>
-                            </span>
-                        </span>
-                    </span>
-                    <span class="wrapper-value size"><span class="inner-wrapper-value">{getMessage('Folder')}</span></span>
-                    <span class="wrapper-value time"><span class="inner-wrapper-value">{date('d.m.Y H:i', $dir->getMTime())}</span></span>
-                </a>
-            </div>
+            {include '_dir.latte', 'dir' => $dir}
 
         {/foreach}
 
         {foreach $files as $file}
 
-            <div class="row file {getClassNameActiveRow($file, 'selectedFile')}" data-file='{getDataFile($file)|noescape}'>
-                <span class="wrapper-value icon">
-                    <span class="inner-wrapper-value">
-                        {getLink($file)|noescape}
-                    </span>
-                </span>
-                <span class="wrapper-value filename">
-                    <span class="inner-wrapper-value">
-                        <span class="name choose-file" data-name="{$file->getBasename('.' . $file->getExtension())}" data-ext="{$file->getExtension()}">
-                            {$file->getFilename()}
-                        </span>
-                        <span class="action">
-                            <span class="choose choose-file">{getMessage('choose file')}</span>
-                            <i class="far fa-edit edit"></i>
-                            <i class="far fa-trash-alt remove"></i>
-                        </span>
-                    </span>
-                </span>
-                <span class="wrapper-value size"><span class="inner-wrapper-value">{$file->getSize()|bytes}</span></span>
-                <span class="wrapper-value time"><span class="inner-wrapper-value">{date('d.m.Y H:i', $file->getMTime())}</span></span>
-            </div>
+            {include '_file.latte', 'file' => $file}
 
         {/foreach}
 
@@ -83,7 +45,7 @@
     <div class="overlay"></div>
 
     <form action="{link dropzone!}" class="dropzone" id="dropzoneBox">
-        <i class="fas fa-times"></i>
+        <a href=""><i class="fas fa-times"></i></a>
         <div class="dz-message needsclick">
             <button type="button" class="dz-button">{getMessage('Drop files here or click to upload.')}</button>
         </div>
@@ -110,9 +72,10 @@
 </div>
 
 <script>
-    __filemanagerMessages = {};
-    __filemanagerMessages.notEmpty = {getMessage('Name cannot be empty')};
-    __filemanagerMessages.illegalCharacters = {getMessage('The name contains illegal characters')};
-    __filemanagerMessages.sure = {getMessage('Are you sure?')};
+    __filemanager = { messages: {}, confDropzone: {}};
+    __filemanager.messages.notEmpty = {getMessage('Name cannot be empty')};
+    __filemanager.messages.illegalCharacters = {getMessage('The name contains illegal characters')};
+    __filemanager.messages.sure = {getMessage('Are you sure?')};
+    __filemanager.confDropzone.maxFilesize = {$conf['maxFilesize']};
 </script>
 
