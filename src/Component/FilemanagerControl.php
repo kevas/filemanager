@@ -58,6 +58,8 @@ class FilemanagerControl extends Control {
 
     private string $thumbDir = '__thumb__';
 
+    private string $nameRootUploadedDir = 'user_uploads';
+
     private Configuration $configuration;
 
     /**
@@ -103,6 +105,12 @@ class FilemanagerControl extends Control {
                 }
             }
 
+        }
+
+        if(isset($params['selectedFolder']) && !empty($params['selectedFolder']) &&
+            strpos($params['selectedFolder'], $this->nameRootUploadedDir) === false) {
+            $params['selectedFolder'] = '';
+            $params['path'] = null;
         }
 
         parent::loadState($params);
@@ -307,7 +315,8 @@ class FilemanagerControl extends Control {
             'canInsertFile' => (!empty($this->idFile) || !empty($this->ckeditor)),
             'canInsertDir' => (!empty($this->idFolder)),
             'paths' => array_filter(explode('/', $this->path)),
-            'conf' => $this->configuration->getConf()
+            'conf' => $this->configuration->getConf(),
+            'searchInDir' => $searchInDir
         ]);
     }
 
