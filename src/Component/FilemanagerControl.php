@@ -54,7 +54,7 @@ class FilemanagerControl extends Control {
 
     private array $messages;
 
-    private ?string $initPath;
+    private ?string $initPath = null;
 
     private string $thumbDir = '__thumb__';
 
@@ -139,7 +139,11 @@ class FilemanagerControl extends Control {
      * @return FilemanagerControl
      */
     public function setInitPath(?string $initPath): FilemanagerControl {
-        $this->initPath = $initPath;
+
+        if(!empty($initPath) && is_dir($this->removeMultipleSlashes($this->getSearchInDir() . '/' . $initPath))) {
+            $this->initPath = $initPath;
+        }
+
         return $this;
     }
 
