@@ -214,7 +214,7 @@ class FilemanagerControl extends Control {
 
             if(!$file->getError()) {
                 $dir = $this->removeMultipleSlashes($this->getSearchInDir() . '/' . $this->path . '/');
-                $file->move($dir . $file->getName());
+                $file->move($dir . $file->getUntrustedName());
             }
 
         }
@@ -388,7 +388,7 @@ class FilemanagerControl extends Control {
         return (
             isset($this->$nameParam) &&
             !empty($this->$nameParam) &&
-            $this->$nameParam == $filename ? 'active' : '');
+            $this->$nameParam === $filename ? 'active' : '');
     }
 
     /**
@@ -399,10 +399,10 @@ class FilemanagerControl extends Control {
         $realPath = $this->basePath->changeBackSlashes($file->getRealPath());
 
         return json_encode([
-            'filename' => $file->getFilename(),
-            'pathFilename' => str_replace($this->basePath->getWwwDir(), '', $realPath),
-            'extension' => $file->getExtension()
-        ]);
+           'filename' => $file->getFilename(),
+           'pathFilename' => str_replace($this->basePath->getWwwDir(), '', $realPath),
+           'extension' => $file->getExtension()
+       ]);
     }
 
     /**
@@ -416,15 +416,15 @@ class FilemanagerControl extends Control {
 
         if($this->isFileImage($file)) {
             $fileIcon = $this->getImageThumb($file);
-        } else if($extension == 'xls' || $extension == 'xlsx') {
+        } elseif($extension == 'xls' || $extension == 'xlsx') {
             $fileIcon = '<i class="far fa-file-excel"></i>';
-        } else if($extension == 'doc') {
+        } elseif($extension == 'doc') {
             $fileIcon = '<i class="far fa-file-word"></i>';
-        } else if($extension == 'pdf') {
+        } elseif($extension == 'pdf') {
             $fileIcon = '<i class="far fa-file-pdf"></i>';
-        } else if($extension == 'zip') {
+        } elseif($extension == 'zip') {
             $fileIcon = '<i class="far fa-file-archive"></i>';
-        } else if($extension == 'txt') {
+        } elseif($extension == 'txt') {
             $fileIcon = '<i class="far fa-file-alt"></i>';
         } else {
             $fileIcon = '<i class="far fa-file"></i>';
