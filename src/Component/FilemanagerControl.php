@@ -67,12 +67,20 @@ class FilemanagerControl extends Control {
      * @param BasePath $basePath
      * @param Configuration $configuration
      */
-    public function __construct(BasePath $basePath, Configuration $configuration) {
+    public function __construct(BasePath $basePath, Configuration $configuration)
+    {
         $this->basePath = $basePath;
         $this->configuration = $configuration;
 
         $this->monitor(Nette\Application\UI\Presenter::class, function () {
-            $this->request = $this->getPresenter()->getHttpRequest();
+
+            $presenter = $this->getPresenter();
+
+            if(!$presenter) {
+                $this->error();
+            }
+
+            $this->request = $presenter->getHttpRequest();
         });
     }
 
@@ -80,7 +88,8 @@ class FilemanagerControl extends Control {
      * @param array $params
      * @throws Nette\Application\BadRequestException
      */
-    public function loadState(array $params): void {
+    public function loadState(array $params): void
+    {
         $init = $this->request->getQuery('init');
         $initCkeditor = $this->request->getQuery('initCkeditor');
 
@@ -120,7 +129,8 @@ class FilemanagerControl extends Control {
      * @param string $uploadDir
      * @return FilemanagerControl
      */
-    public function setUploadDir(string $uploadDir): FilemanagerControl {
+    public function setUploadDir(string $uploadDir): FilemanagerControl
+    {
         $this->uploadDir = $uploadDir;
         return $this;
     }
@@ -138,7 +148,8 @@ class FilemanagerControl extends Control {
      * @param string|null $initPath
      * @return FilemanagerControl
      */
-    public function setInitPath(?string $initPath): FilemanagerControl {
+    public function setInitPath(?string $initPath): FilemanagerControl
+    {
 
         if(!empty($initPath) && is_dir($this->removeMultipleSlashes($this->getSearchInDir() . '/' . $initPath))) {
             $this->initPath = $initPath;
@@ -152,7 +163,8 @@ class FilemanagerControl extends Control {
      * @param string $dirName
      * @throws Nette\Application\AbortException
      */
-    public function handleChildDir(string $dirName) {
+    public function handleChildDir(string $dirName): void
+    {
         $this->path = (!empty($this->path) ? $this->path . '/' : '') . $dirName;
         $this->redirect('this');
     }
@@ -161,7 +173,8 @@ class FilemanagerControl extends Control {
      * @Handle
      * @throws Nette\Application\AbortException
      */
-    public function handleParentDir() {
+    public function handleParentDir(): void
+    {
         $path = $this->path;
         $pathArr = array_filter(explode('/', $path));
         $countPath = count($pathArr);
@@ -183,8 +196,9 @@ class FilemanagerControl extends Control {
      * @param int $i
      * @throws Nette\Application\AbortException
      */
-    public function handleBreadCrumb(int $i) {
-        if($i == 0) {
+    public function handleBreadCrumb(int $i): void
+    {
+        if($i === 0) {
             $this->path = null;
             $this->redirect('this');
         }
@@ -201,33 +215,35 @@ class FilemanagerControl extends Control {
         $this->redirect('this');
     }
 
-    /**
-     * @Handle
-     */
-    public function handleDropzone() {
-        $files = $this->getPresenter()->getRequest()->getFiles();
+    public function handleDropzone(): void
+    {
+        $presenter = $this->getPresenter();
 
-        if(isset($files['file'])) {
+        if($presenter !== null && $presenter->getRequest() !== null) {
+            $files = $presenter->getRequest()->getFiles();
 
-            /** @var FileUpload $file */
-            $file = $files['file'];
+            if(isset($files['file'])) {
 
-            if(!$file->getError()) {
-                $dir = $this->removeMultipleSlashes($this->getSearchInDir() . '/' . $this->path . '/');
-                $file->move($dir . $file->getUntrustedName());
+                /** @var FileUpload $file */
+                $file = $files['file'];
+
+                if(!$file->getError()) {
+                    $dir = $this->removeMultipleSlashes($this->getSearchInDir() . '/' . $this->path . '/');
+                    $file->move($dir . $file->getUntrustedName());
+                }
+
             }
-
         }
 
         exit;
     }
 
     /**
-     * @Handle
      * @throws FilemanagerException
      * @throws Nette\Application\AbortException
      */
-    public function handleCreateDir() {
+    public function handleCreateDir(): void
+    {
         $name = $this->request->getPost('folderName');
         $dir = $this->removeMultipleSlashes($this->getSearchInDir() . '/' . $this->path . '/');
 
@@ -246,11 +262,11 @@ class FilemanagerControl extends Control {
     }
 
     /**
-     * @Handle
      * @throws FilemanagerException
      * @throws Nette\Application\AbortException
      */
-    public function handleEditDir() {
+    public function handleEditDir(): void
+    {
         $oldName = $this->request->getPost('oldEditName');
         $newName = $this->request->getPost('editName');
         $ext = $this->request->getPost('ext');
@@ -276,11 +292,11 @@ class FilemanagerControl extends Control {
     }
 
     /**
-     * @Handle
      * @throws FilemanagerException
      * @throws Nette\Application\AbortException
      */
-    public function handleRemove() {
+    public function handleRemove(): void
+    {
         $name = $this->request->getPost('removeName');
 
         if(!empty($name)) {
@@ -306,7 +322,12 @@ class FilemanagerControl extends Control {
             $langMessageFile = __DIR__ . '/../messages/en.json';
         }
 
-        $this->messages = json_decode(FileSystem::read($langMessageFile), true);
+        try {
+            $this->messages = (array) Nette\Utils\Json::decode(FileSystem::read($langMessageFile));
+        } catch (Nette\Utils\JsonException $e) {
+        }
+
+        bdump($this->messages);
 
         $searchInDir = $this->getSearchInDir() . '/' . $this->path;
 
@@ -324,7 +345,8 @@ class FilemanagerControl extends Control {
         ]);
     }
 
-    private function addLatteFunction() {
+    private function addLatteFunction(): void
+    {
         $latte = $this->template->getLatte();
 
         $latte->addFunction('getMessage', function ($text) {
@@ -362,9 +384,20 @@ class FilemanagerControl extends Control {
      * @return string
      */
     private function getDataDir(SplFileInfo $folder): string {
-        return json_encode([
-            'path' => str_replace($this->basePath->getWwwDir(), '', $this->basePath->changeBackSlashes($folder->getRealPath()))
-        ]);
+        $dataDir = '';
+
+        try {
+            $dataDir = Nette\Utils\Json::encode([
+                 'path' => str_replace(
+                     $this->basePath->getWwwDir(),
+                     '',
+                     $this->basePath->changeBackSlashes($folder->getRealPath())
+                 )
+            ]);
+        } catch (Nette\Utils\JsonException $e) {
+        }
+
+        return $dataDir;
     }
 
     /**
@@ -396,13 +429,19 @@ class FilemanagerControl extends Control {
      * @return string
      */
     private function getDataFile(SplFileInfo $file): string {
+        $dataFile = '';
         $realPath = $this->basePath->changeBackSlashes($file->getRealPath());
 
-        return json_encode([
-           'filename' => $file->getFilename(),
-           'pathFilename' => str_replace($this->basePath->getWwwDir(), '', $realPath),
-           'extension' => $file->getExtension()
-       ]);
+        try {
+            $dataFile = Nette\Utils\Json::encode([
+                'filename' => $file->getFilename(),
+                'pathFilename' => str_replace($this->basePath->getWwwDir(), '', $realPath),
+                'extension' => $file->getExtension()
+            ]);
+        } catch (Nette\Utils\JsonException $e) {
+        }
+
+        return $dataFile;
     }
 
     /**
@@ -412,19 +451,19 @@ class FilemanagerControl extends Control {
      * @throws ImageException
      */
     private function getFileIcon(SplFileInfo $file) {
-        $extension = $file->getExtension();
+        $extension = strtolower($file->getExtension());
 
         if($this->isFileImage($file)) {
             $fileIcon = $this->getImageThumb($file);
-        } elseif($extension == 'xls' || $extension == 'xlsx') {
+        } elseif($extension === 'xls' || $extension === 'xlsx') {
             $fileIcon = '<i class="far fa-file-excel"></i>';
-        } elseif($extension == 'doc') {
+        } elseif($extension === 'doc') {
             $fileIcon = '<i class="far fa-file-word"></i>';
-        } elseif($extension == 'pdf') {
+        } elseif($extension === 'pdf') {
             $fileIcon = '<i class="far fa-file-pdf"></i>';
-        } elseif($extension == 'zip') {
+        } elseif($extension === 'zip') {
             $fileIcon = '<i class="far fa-file-archive"></i>';
-        } elseif($extension == 'txt') {
+        } elseif($extension === 'txt') {
             $fileIcon = '<i class="far fa-file-alt"></i>';
         } else {
             $fileIcon = '<i class="far fa-file"></i>';
@@ -439,7 +478,7 @@ class FilemanagerControl extends Control {
      * @return bool
      */
     private function isFileImage(SplFileInfo $file): bool {
-        $imageExtensions = ['jpg', 'jpeg', 'png', 'gif', 'bnp'];
+        $imageExtensions = ['jpg', 'jpeg', 'png', 'gif', 'bnp', 'webp', 'bmp'];
         return (in_array(strtolower($file->getExtension()), $imageExtensions));
     }
 
@@ -465,7 +504,7 @@ class FilemanagerControl extends Control {
             $srcImage = $this->removeMultipleSlashes($file->getPath() . '/' . $file->getFilename());
 
             $image = Image::fromFile($srcImage);
-            $image->resize($width, $height, Image::SHRINK_ONLY | Image::STRETCH);
+            $image->resize($width, $height, Image::SHRINK_ONLY | Image::EXACT);
             $image->save($thumbImage, 80, Image::PNG);
         }
 
