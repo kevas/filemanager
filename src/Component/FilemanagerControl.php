@@ -327,16 +327,17 @@ class FilemanagerControl extends Control {
         } catch (Nette\Utils\JsonException $e) {
         }
 
-        bdump($this->messages);
-
         $searchInDir = $this->getSearchInDir() . '/' . $this->path;
 
         $dirs = Finder::findDirectories('*')->in($searchInDir)->exclude($this->thumbDir);
         $files = Finder::findFiles('*')->exclude('.*')->in($searchInDir);
 
+        $dirItems = $this->sortItems($dirs);
+        $fileItems = $this->sortItems($files);
+
         $this->template->render(__DIR__ . '/../template/index.latte', [
-            'dirs' => $dirs,
-            'files' => $files,
+            'dirItems' => $dirItems,
+            'fileItems' => $fileItems,
             'canInsertFile' => (!empty($this->idFile) || !empty($this->ckeditor)),
             'canInsertDir' => (!empty($this->idFolder)),
             'paths' => array_filter(explode('/', $this->path)),
@@ -377,6 +378,24 @@ class FilemanagerControl extends Control {
             return $this->getLink($file);
         });
 
+    }
+
+    /**
+     * @param $items
+     * @return array
+     */
+    private function sortItems($items): array
+    {
+        /** @var SplFileInfo $item */
+        $newItems = [];
+
+        foreach($items as $item) {
+            $newItems[$item->getFilename()] = $item;
+        }
+
+        ksort($newItems,  SORT_NATURAL);
+
+        return $newItems;
     }
 
     /**

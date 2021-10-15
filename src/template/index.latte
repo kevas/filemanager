@@ -19,9 +19,9 @@
             </div>
         {/if}
 
-        {if is_dir($searchInDir) && $dirs->count() > 0}
+        {if is_dir($searchInDir) && count($dirItems) > 0}
 
-            {foreach $dirs as $dir}
+            {foreach $dirItems as $dir}
 
                 {include '_dir.latte', 'dir' => $dir}
 
@@ -29,15 +29,15 @@
 
         {/if}
 
-        {if is_dir($searchInDir) && $files->count() > 0}
-            {foreach $files as $file}
+        {if is_dir($searchInDir) && count($fileItems) > 0}
+            {foreach $fileItems as $file}
 
                 {include '_file.latte', 'file' => $file}
 
             {/foreach}
         {/if}
 
-        {if is_dir($searchInDir) && $dirs->count() == 0 && $files->count() == 0}
+        {if is_dir($searchInDir) && count($dirItems) == 0 && count($fileItems) == 0}
             <div class="empty-content">
                 <div class="empty-content-inner">
                     <button class="btn upload"><i class="fas fa-upload"></i>{getMessage('Upload files')}</button>
